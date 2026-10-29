@@ -1,6 +1,6 @@
 .footer {
   width: 100%;
-  padding: 32px;
+  padding: 18px;
   background-color: var(--black);
   border-top: 1px solid var(--footer-border);
   color: var(--color-on-dark);
@@ -29,12 +29,6 @@
   font-size: 0.85rem;
 }
 
-.text {
-  font-size: 0.8rem;
-  text-align: center;
-  color: var(--color-text-on-dark);
-}
-
 .link {
   color: var(--color-on-dark);
   text-decoration: underline;
@@ -57,10 +51,9 @@
 .bottom {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: baseline;
   gap: 8px 24px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(246, 244, 241, 0.15);
 }
 
 .copy {
@@ -91,15 +84,8 @@
     font-size: 0.8rem;
   }
 
-  .text {
-    font-size: 0.7rem;
-  }
-
   .bottom {
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding-top: 12px;
+    gap: 4px 16px;
   }
 
   .copy {

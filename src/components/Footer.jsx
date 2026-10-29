@@ -24,12 +24,6 @@ export function Footer({ ruta }) {
             ))}
           </ul>
         </nav>
-
-        <p className={styles.text}>
-          Los resultados son orientativos y no sustituyen la revisión de un
-          técnico.
-        </p>
-
         <div className={styles.bottom}>
           <p className={styles.copy}>
             © {new Date().getFullYear()} Diagnostica tu PC
