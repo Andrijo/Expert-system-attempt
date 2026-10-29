@@ -10,6 +10,7 @@
 - Mantén el código modular, limpio y bien tipado.
 - Respeta la arquitectura existente del proyecto antes de proponer cambios estructurales.
 - No agregues comentarios innecesarios ni código muerto/comentado.
+- Todos los nuevos cambios se tienen que implementar en una nueva rama, nunca en main.
 
 ## Comandos Frecuentes
 
