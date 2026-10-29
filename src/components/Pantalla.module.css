@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: var(--font-color);
+}
+
+.back {
+  align-self: flex-start;
+  color: var(--font-color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.back:hover {
+  color: var(--color-secondary);
+}
+
+.back:focus-visible,
+.title:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.title {
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}

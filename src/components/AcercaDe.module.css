@@ -1,0 +1,63 @@
+.lead {
+  margin: 0;
+  max-width: 580px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.text {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.pasos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: paso;
+}
+
+.paso {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 18px 14px 56px;
+  position: relative;
+  line-height: 1.5;
+  counter-increment: paso;
+}
+
+.paso::before {
+  content: counter(paso);
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.pasoTitulo {
+  font-weight: 700;
+}
