@@ -224,12 +224,18 @@ export const BASE_CONOCIMIENTO = `
       causa(Componente1, SintomaEspecifico),
       \\+ causa(Componente2, SintomaEspecifico).
 
+  % Componentes conocidos, sin repetir y en orden alfabético.
+  componente(Componente) :-
+      setof(C, S^causa(C, S), Componentes),
+      member(Componente, Componentes).
+
   % Regla 11: Diagnóstico por Mayoría de Coincidencias
-  % Cuenta cuántos síntomas reportados coinciden con un componente.
-  % Permite ordenar los resultados por relevancia desde React/JS.
-  diagnostico_mayoria(Componente, Sintomas, Coincidencias) :-
-      findall(S, (member(S, Sintomas), causa(Componente, S)), Matches),
-      length(Matches, Coincidencias),
+  % Cuenta cuántos síntomas reportados coinciden con un componente
+  % y devuelve cuáles son. Permite ordenar los resultados desde React/JS.
+  diagnostico_mayoria(Componente, Sintomas, Coincidencias, Coincidentes) :-
+      componente(Componente),
+      findall(S, (member(S, Sintomas), causa(Componente, S)), Coincidentes),
+      length(Coincidentes, Coincidencias),
       Coincidencias > 0.
 
   % Regla 12: Diagnóstico Prioritario por Síntoma Crítico

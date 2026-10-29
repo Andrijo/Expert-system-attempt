@@ -6,8 +6,8 @@ Resumen rápido
 - El usuario escribe un síntoma en la UI.
 - extraerSintomas convierte el texto en uno o varios 'síntomas' canónicos.
 - Se valida que el texto no contenga palabras prohibidas (lista en `src/data/palabrasProhibidas.js`).
-- Si es válido, se carga la base de conocimiento Prolog (`src/data/baseConocimiento.js`) en Tau Prolog (cargado por CDN desde `index.html`) y se consultan reglas para inferir posibles componentes fallidos.
-- Los resultados se muestran en la lista; al seleccionar una causa se muestra información detallada (explicaciones, pasos y videos).
+- Si es válido, se carga la base de conocimiento Prolog (`src/data/baseConocimiento.js`) en Tau Prolog (paquete npm, cargado bajo demanda en la primera búsqueda) y se consulta la regla `diagnostico_mayoria` para inferir posibles componentes fallidos.
+- Los resultados se muestran ordenados por número de síntomas coincidentes; al seleccionar una causa se muestra información detallada (explicaciones, pasos y videos).
 
 Estructura principal
 - `src/App.jsx` — Componente raíz y orquestador de la UI.
@@ -16,14 +16,17 @@ Estructura principal
 - `src/data/explicaciones.js` — Información detallada (pasos, herramientas, videos) para cada componente.
 - `src/utils/extraerSintoma.js` — Mapea texto libre a síntomas canónicos.
 - `src/utils/contienePalabrasProhibidas.js` — Detección de palabras no permitidas.
+- `src/utils/tauProlog.js` — Carga de Tau Prolog y su módulo `lists`.
+- `src/styles/global.css` — Tokens de color y estilos globales.
 - `src/components/*` — Componentes visuales (BuscadorSintoma, ListaDiagnosticos, DetalleDiagnostico).
-- `index.html` — Carga de la app y del runtime de Tau Prolog (CDN).
+- `index.html` — Punto de entrada de la app.
 
 Dependencias
 - Dependencias de producción (definidas en `package.json`):
   - react ^19
   - react-dom ^19
-  - @gsap/react ^2 (para animaciones)
+  - gsap ^3 y @gsap/react ^2 (para animaciones)
+  - tau-prolog ^0.3.4 (motor de inferencia)
 - Dependencias de desarrollo:
   - vite ^8 (dev server / build)
   - @vitejs/plugin-react
@@ -31,7 +34,6 @@ Dependencias
 
 Requisitos
 - Node.js (recomendado 16+). Vite funciona mejor en Node 16 o superior.
-- Conexión a Internet para cargar Tau Prolog desde el CDN (si no se quiere depender de CDN, ver nota abajo).
 
 Instalación y ejecución
 1. Instalar dependencias:
@@ -53,10 +55,8 @@ Instalación y ejecución
    npm run preview
 
 Notas de uso
-- El motor Prolog (Tau Prolog) se carga mediante la etiqueta script en `index.html`:
-  <script src="https://cdn.jsdelivr.net/npm/tau-prolog@0.3.4/modules/core.js"></script>
-  Si trabaja sin conexión o prefiere dependencias empaquetadas, instale `tau-prolog` como paquete npm y adapte `useDiagnosticoPC` para importar/crear la instancia desde el paquete en lugar de `window.pl`.
-- Si la consola muestra `pl is undefined`, asegúrese de que `index.html` carga el script de Tau Prolog antes del bundle y que la app se sirve desde el dev server o build (abrir el archivo directamente con el filesystem puede causar problemas con módulos y variables globales).
+- Tau Prolog se empaqueta con la app, así que funciona sin conexión. Su código asigna variables globales implícitas, que fallan en modo estricto (ESM); por eso `src/utils/tauProlog.js` lo evalúa como script clásico en lugar de importarlo directamente.
+- La sesión de Prolog se crea una sola vez y las consultas se encolan, porque una sesión de Tau solo atiende una consulta a la vez.
 
 Dónde modificar la lógica o el conocimiento
 - Añadir o ajustar hechos y reglas: editar `src/data/baseConocimiento.js`.
@@ -74,4 +74,3 @@ Este repositorio no incluye una licencia explícita (compruebe con el autor si n
 
 Contacto / próximos pasos
 - Para mejorar la extracción de lenguaje natural puede integrar librerías de NLP o añadir más patrones en `extraerSintoma.js`.
-- Si desea empaquetar Tau Prolog en el build, puedo ayudar a convertir la dependencia CDN a una importación desde npm y ajustar el hook `useDiagnosticoPC`.

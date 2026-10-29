@@ -1,29 +1,12 @@
-:global(*),
-:global(*::before),
-:global(*::after) {
-  box-sizing: border-box;
-}
-
-:global(:root) {
-  --color-primary: #f2f4f3;
-  --color-primary-dark: #d9e0de;
-  --color-secondary: #282b4a;
-  --black: #000000;
-  --font-color: #000f08;
-}
-
-:global(body) {
-  margin: 0;
-  font-family: "Montserrat", sans-serif;
-  background-color: var(--color-primary);
-}
-
 .wrapper {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 32px;
+  /* Arriba y abajo se suma lo que sobresale el título, para que no se
+     corte y la tarjeta siga centrada */
+  padding: 77px 32px;
   background-color: var(--color-primary);
   background-image:
     radial-gradient(
@@ -42,7 +25,6 @@
   position: relative;
   width: 100%;
   max-width: 650px;
-  margin-top: 4rem;
   box-sizing: border-box;
   padding: 140px 45px 45px;
   border-radius: 20px 2px 20px 2px;
@@ -52,7 +34,7 @@
     rgba(255, 255, 255, 0.15) 100%
   );
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px), saturate(160px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 }
@@ -81,7 +63,8 @@
   line-height: 0.9;
   letter-spacing: -0.05em;
   text-transform: uppercase;
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-family);
+  font-weight: 900;
   font-size: clamp(3rem, 7vw, 4rem);
   color: var(--font-color);
   padding: 0 14px;
@@ -147,15 +130,14 @@
   color: var(--color-primary);
   font-size: 0.8rem;
   text-transform: lowercase;
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-family);
 }
 
 /* Estilo para dispositivos móviles */
 
 @media (max-width: 640px) {
   .wrapper {
-    align-items: flex-start;
-    padding-top: 96px;
+    padding-block: 60px;
   }
 
   .card {

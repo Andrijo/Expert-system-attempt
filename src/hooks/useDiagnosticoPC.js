@@ -1,7 +1,73 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { BASE_CONOCIMIENTO } from "../data/baseConocimiento"
 import { extraerSintomas } from "../utils/extraerSintoma"
 import { obtenerPalabraProhibida } from "../utils/contienePalabrasProhibidas"
+
+// La base de conocimiento se carga una sola vez y la sesión se reutiliza.
+let sesionPromesa = null
+
+const obtenerSesion = () => {
+  if (!sesionPromesa) {
+    // Tau Prolog es pesado: se descarga solo cuando se hace la primera búsqueda
+    sesionPromesa = import("../utils/tauProlog").then(
+      ({ default: pl }) =>
+        new Promise((resolve, reject) => {
+          const session = pl.create()
+          session.consult(BASE_CONOCIMIENTO, {
+            success: () => resolve(session),
+            error: (err) => reject(err),
+          })
+        }),
+    )
+    // Si falla, se permite reintentar en la siguiente búsqueda
+    sesionPromesa.catch(() => {
+      sesionPromesa = null
+    })
+  }
+  return sesionPromesa
+}
+
+// Una sesión de Tau Prolog solo atiende una consulta a la vez,
+// así que las consultas se encolan.
+let cola = Promise.resolve()
+
+const consultarCoincidencias = (session, sintomas) => {
+  const consulta = () =>
+    new Promise((resolve, reject) => {
+      const query = `diagnostico_mayoria(Componente, [${sintomas.join(", ")}], Coincidencias, Coincidentes).`
+
+      session.query(query, {
+        success: () => {
+          const resultados = []
+
+          const recolectar = () => {
+            session.answer({
+              success: (answer) => {
+                resultados.push({
+                  componente: answer.lookup("Componente").id,
+                  coincidencias: answer.lookup("Coincidencias").value,
+                  sintomasCoincidentes: answer
+                    .lookup("Coincidentes")
+                    .toJavaScript(),
+                })
+                recolectar()
+              },
+              fail: () => resolve(resultados),
+              error: reject,
+              limit: () => reject(new Error("Límite de inferencia alcanzado")),
+            })
+          }
+
+          recolectar()
+        },
+        error: reject,
+      })
+    })
+
+  const resultado = cola.then(consulta)
+  cola = resultado.catch(() => {})
+  return resultado
+}
 
 export function useDiagnosticoPC() {
   const [diagnosticos, setDiagnosticos] = useState([])
@@ -11,44 +77,17 @@ export function useDiagnosticoPC() {
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 
+  // Permite descartar respuestas de búsquedas que ya no están vigentes
+  const busquedaActual = useRef(0)
+
   const limpiarDiagnosticos = useCallback(() => {
+    busquedaActual.current++
     setDiagnosticos([])
     setSintomasDetectados([])
     setError(null)
     setPalabraProhibida(null)
+    setIsLoading(false)
     setHasSearched(false)
-  }, [])
-
-  const consultarSintoma = useCallback((session, sintoma) => {
-    return new Promise((resolve) => {
-      const query = `posible_fallo(Componente, ${sintoma}).`
-
-      session.query(query, {
-        success: () => {
-          const resultados = []
-
-          const recolectar = () => {
-            session.answer({
-              success: (answer) => {
-                resultados.push(answer.lookup("Componente").id)
-                recolectar()
-              },
-              fail: () => resolve(resultados),
-              error: (err) => {
-                console.error(err)
-                resolve(resultados)
-              },
-            })
-          }
-
-          recolectar()
-        },
-        error: (err) => {
-          console.error(err)
-          resolve([])
-        },
-      })
-    })
   }, [])
 
   const analizarSintoma = useCallback(
@@ -61,46 +100,43 @@ export function useDiagnosticoPC() {
       const palabraDetectada = obtenerPalabraProhibida(texto)
 
       if (palabraDetectada) {
-        setDiagnosticos([])
-        setSintomasDetectados([])
+        limpiarDiagnosticos()
         setPalabraProhibida(palabraDetectada)
-        setError(`Se detectó una palabra no permitida: "${palabraDetectada}".`)
-        setHasSearched(true)
-        setIsLoading(false)
         return
       }
 
-      setPalabraProhibida(null)
-
+      const id = ++busquedaActual.current
       const sintomas = extraerSintomas(texto)
 
+      setPalabraProhibida(null)
       setHasSearched(true)
       setSintomasDetectados(sintomas)
-      setIsLoading(true)
+      setDiagnosticos([])
       setError(null)
 
-      const pl = window.pl
-      const session = pl.create()
+      if (sintomas.length === 0) return
 
-      session.consult(BASE_CONOCIMIENTO, {
-        success: async () => {
-          const resultadosPorSintoma = await Promise.all(
-            sintomas.map((s) => consultarSintoma(session, s)),
-          )
+      setIsLoading(true)
 
-          const todos = resultadosPorSintoma.flat()
-          const unicos = [...new Set(todos)]
+      try {
+        const session = await obtenerSesion()
+        const resultados = await consultarCoincidencias(session, sintomas)
 
-          setDiagnosticos(unicos)
-          setIsLoading(false)
-        },
-        error: (err) => {
-          setError(`Error al cargar la base de conocimiento: ${err}`)
-          setIsLoading(false)
-        },
-      })
+        if (id !== busquedaActual.current) return
+
+        // Orden estable: a igual número de coincidencias se mantiene
+        // el orden alfabético que devuelve Prolog.
+        resultados.sort((a, b) => b.coincidencias - a.coincidencias)
+        setDiagnosticos(resultados)
+      } catch (err) {
+        console.error(err)
+        if (id !== busquedaActual.current) return
+        setError(`Error al consultar la base de conocimiento: ${err}`)
+      } finally {
+        if (id === busquedaActual.current) setIsLoading(false)
+      }
     },
-    [consultarSintoma, limpiarDiagnosticos],
+    [limpiarDiagnosticos],
   )
 
   return {

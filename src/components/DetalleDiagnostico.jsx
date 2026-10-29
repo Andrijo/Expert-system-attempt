@@ -2,7 +2,12 @@ import styles from "./DetalleDiagnostico.module.css"
 import { EXPLICACIONES } from "../data/explicaciones"
 import { getYoutubeSearchUrl } from "../utils/youtube"
 
-export function DetalleDiagnostico({ causa, sintomasDetectados, onVolver }) {
+export function DetalleDiagnostico({
+  causa,
+  sintomasCoincidentes,
+  totalSintomas,
+  onVolver,
+}) {
   const detalle = EXPLICACIONES[causa]
 
   if (!detalle) {
@@ -17,10 +22,6 @@ export function DetalleDiagnostico({ causa, sintomasDetectados, onVolver }) {
       </div>
     )
   }
-
-  const sintomasCoincidentes = sintomasDetectados.filter((sintoma) =>
-    detalle.sintomasRelacionados.includes(sintoma),
-  )
 
   return (
     <div className={styles.container}>
@@ -38,9 +39,11 @@ export function DetalleDiagnostico({ causa, sintomasDetectados, onVolver }) {
       <section className={styles.section}>
         <h4 className={styles.subtitle}>¿Cómo se llegó a esta conclusión?</h4>
         <p className={styles.text}>
-          Se llegó a esta conclusión porque los síntomas que se reportaron
-          coinciden con los síntomas asociados a este componente en la base de
-          conocimiento.
+          Se llegó a esta conclusión porque {sintomasCoincidentes.length} de{" "}
+          {totalSintomas} {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
+          {totalSintomas === 1 ? "reportado" : "reportados"}{" "}
+          {sintomasCoincidentes.length === 1 ? "coincide" : "coinciden"} con los
+          síntomas asociados a este componente en la base de conocimiento.
         </p>
 
         <div className={styles.chips}>
