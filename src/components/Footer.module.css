@@ -2,7 +2,8 @@
   width: 100%;
   padding: 32px;
   background-color: var(--black);
-  color: var(--color-primary);
+  border-top: 1px solid var(--footer-border);
+  color: var(--color-on-dark);
 }
 
 .content {
@@ -35,7 +36,7 @@
 }
 
 .link {
-  color: var(--color-primary);
+  color: var(--color-on-dark);
   text-decoration: underline;
   text-decoration-color: transparent;
   text-underline-offset: 4px;
