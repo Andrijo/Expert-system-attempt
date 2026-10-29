@@ -16,6 +16,10 @@
   --radius-card: 20px;
   --color-muted: #5c5c5c;
   --color-error: #b00020;
+  --color-border: #8f8a80;
+  --color-accent-on-dark: #ff6b57;
+  --color-text-on-dark: #c9c4ba;
+  --color-muted-on-dark: #a39e94;
 
   --urgencia-critica-bg: #c8321f;
   --urgencia-critica-text: #f6f4f1;

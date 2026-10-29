@@ -6,6 +6,10 @@ import { BuscadorSintoma } from "./components/BuscadorSintoma"
 import { ListaDiagnosticos } from "./components/ListaDiagnosticos"
 import { DetalleDiagnostico } from "./components/DetalleDiagnostico"
 import { SelectorSintomas } from "./components/SelectorSintomas"
+import { Footer } from "./components/Footer"
+import { AcercaDe } from "./components/AcercaDe"
+import { FormularioFeedback } from "./components/FormularioFeedback"
+import { useRuta } from "./hooks/useRuta"
 import { etiquetaSintoma } from "./utils/extraerSintoma"
 import { prefiereMenosMovimiento } from "./utils/movimiento"
 import styles from "./App.module.css"
@@ -31,6 +35,9 @@ export default function DiagnosticoPC() {
   const detailRef = useRef(null)
   const resultsTitleRef = useRef(null)
   const restaurarFoco = useRef(false)
+
+  const ruta = useRuta()
+  const rutaAnterior = useRef(ruta)
 
   const {
     diagnosticos,
@@ -98,6 +105,13 @@ export default function DiagnosticoPC() {
     }
   }, [mostrarResultados])
 
+  useEffect(() => {
+    if (rutaAnterior.current !== ruta && ruta === "inicio") {
+      titleRef.current?.focus()
+    }
+    rutaAnterior.current = ruta
+  }, [ruta])
+
   useGSAP(() => {
     if (prefiereMenosMovimiento()) return
     const tl = gsap.timeline()
@@ -108,26 +122,27 @@ export default function DiagnosticoPC() {
       duration: 0.8,
       ease: "power3.out",
     })
-      .from(
-        titleRef.current,
-        {
-          y: 20,
-          opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
-        },
-        "-=0.45",
-      )
-      .from(
-        descriptionRef.current,
-        {
-          y: 12,
-          opacity: 0,
-          duration: 0.45,
-          ease: "power2.out",
-        },
-        "-=0.35",
-      )
+    if (!titleRef.current) return
+
+    tl.from(
+      titleRef.current,
+      {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      },
+      "-=0.45",
+    ).from(
+      descriptionRef.current,
+      {
+        y: 12,
+        opacity: 0,
+        duration: 0.45,
+        ease: "power2.out",
+      },
+      "-=0.35",
+    )
   }, [])
 
   useGSAP(() => {
@@ -173,119 +188,132 @@ export default function DiagnosticoPC() {
   }, [mostrarDetalle, causaSeleccionada])
 
   return (
-    <div className={styles.wrapper}>
-      <div ref={cardRef} className={styles.card}>
-        <h1 ref={titleRef} className={styles.title}>
-          Diagnóstica
-          <span className={styles.subtitle}>tu PC</span>
-        </h1>
+    <div className={styles.page}>
+      <div className={styles.wrapper}>
+        <div ref={cardRef} className={styles.card}>
+          {ruta === "acerca" && <AcercaDe />}
+          {ruta === "contacto" && <FormularioFeedback />}
+          {ruta === "inicio" && (
+            <>
+              <h1 ref={titleRef} tabIndex={-1} className={styles.title}>
+                Diagnostica
+                <span className={styles.subtitle}>tu PC</span>
+              </h1>
 
-        <p ref={descriptionRef} className={styles.description}>
-          Describe el problema que estás experimentando con tu computadora y
-          nuestro sistema experto tratará de ayudarte.
-        </p>
-
-        <BuscadorSintoma
-          value={draftSintoma}
-          onChange={handleChangeSintoma}
-          onAnalizar={handlerAnalizar}
-          isLoading={isLoading}
-          puedeAnalizar={puedeAnalizar}
-        />
-
-        <SelectorSintomas
-          seleccionados={sintomasElegidos}
-          onToggle={handleToggleSintoma}
-        />
-
-        {palabraProhibida && (
-          <p role="alert" className={styles.errorMessage}>
-            La palabra <strong>{palabraProhibida}</strong> no está permitida.
-          </p>
-        )}
-
-        <div aria-live="polite">
-          {mostrarResultados && sintomasDetectados.length === 0 && (
-            <div ref={resultsRef} className={styles.results}>
-              <h2 className={styles.resultsTitle}>
-                No reconocí ningún síntoma.
-              </h2>
-              <p className={styles.help}>
-                Intenta describirlo con otras palabras. Por ejemplo:
+              <p ref={descriptionRef} className={styles.description}>
+                Describe el problema que estás experimentando con tu computadora
+                y nuestro sistema experto tratará de ayudarte.
               </p>
-              <ul className={styles.examples}>
-                {EJEMPLOS.map((ejemplo) => (
-                  <li key={ejemplo}>
-                    <button
-                      type="button"
-                      className={styles.example}
-                      onClick={() => setDraftSintoma(ejemplo)}>
-                      {ejemplo}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
 
-          {mostrarResultados && sintomasDetectados.length > 0 && (
-            <div ref={resultsRef} className={styles.results}>
-              {hayOlorAQuemado && (
-                <p role="alert" className={styles.safetyAlert}>
-                  <strong>Atención:</strong> el olor a quemado puede indicar un
-                  riesgo de incendio. Apaga y desconecta el equipo ahora y no lo
-                  vuelvas a encender hasta que lo revise un técnico.
+              <BuscadorSintoma
+                value={draftSintoma}
+                onChange={handleChangeSintoma}
+                onAnalizar={handlerAnalizar}
+                isLoading={isLoading}
+                puedeAnalizar={puedeAnalizar}
+              />
+
+              <SelectorSintomas
+                seleccionados={sintomasElegidos}
+                onToggle={handleToggleSintoma}
+              />
+
+              {palabraProhibida && (
+                <p role="alert" className={styles.errorMessage}>
+                  La palabra <strong>{palabraProhibida}</strong> no está
+                  permitida.
                 </p>
               )}
 
-              <div className={styles.chips}>
-                Síntomas detectados:
-                {sintomasDetectados.map((s) => (
-                  <span key={s} className={styles.chip}>
-                    {etiquetaSintoma(s)}
-                  </span>
-                ))}
+              <div aria-live="polite">
+                {mostrarResultados && sintomasDetectados.length === 0 && (
+                  <div ref={resultsRef} className={styles.results}>
+                    <h2 className={styles.resultsTitle}>
+                      No reconocí ningún síntoma.
+                    </h2>
+                    <p className={styles.help}>
+                      Intenta describirlo con otras palabras. Por ejemplo:
+                    </p>
+                    <ul className={styles.examples}>
+                      {EJEMPLOS.map((ejemplo) => (
+                        <li key={ejemplo}>
+                          <button
+                            type="button"
+                            className={styles.example}
+                            onClick={() => setDraftSintoma(ejemplo)}>
+                            {ejemplo}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {mostrarResultados && sintomasDetectados.length > 0 && (
+                  <div ref={resultsRef} className={styles.results}>
+                    {hayOlorAQuemado && (
+                      <p role="alert" className={styles.safetyAlert}>
+                        <strong>Atención:</strong> el olor a quemado puede
+                        indicar un riesgo de incendio. Apaga y desconecta el
+                        equipo ahora y no lo vuelvas a encender hasta que lo
+                        revise un técnico.
+                      </p>
+                    )}
+
+                    <div className={styles.chips}>
+                      Síntomas detectados:
+                      {sintomasDetectados.map((s) => (
+                        <span key={s} className={styles.chip}>
+                          {etiquetaSintoma(s)}
+                        </span>
+                      ))}
+                    </div>
+
+                    {sintomasDetectados.length === 1 && (
+                      <p className={styles.hint}>
+                        Con un solo síntoma hay muchas causas posibles. Añade
+                        más detalles para afinar el resultado.
+                      </p>
+                    )}
+
+                    <h2
+                      ref={resultsTitleRef}
+                      tabIndex={-1}
+                      className={styles.resultsTitle}>
+                      Posibles causas:
+                    </h2>
+                    <ListaDiagnosticos
+                      diagnosticos={diagnosticos}
+                      totalSintomas={sintomasDetectados.length}
+                      error={error}
+                      onSeleccionar={handleSeleccionarCausa}
+                    />
+                  </div>
+                )}
+
+                {mostrarDetalle && (
+                  <div ref={detailRef} className={styles.results}>
+                    <DetalleDiagnostico
+                      causa={causaSeleccionada.componente}
+                      sintomasCoincidentes={
+                        causaSeleccionada.sintomasCoincidentes
+                      }
+                      totalSintomas={sintomasDetectados.length}
+                      onVolver={handleVolver}
+                    />
+                  </div>
+                )}
               </div>
 
-              {sintomasDetectados.length === 1 && (
-                <p className={styles.hint}>
-                  Con un solo síntoma hay muchas causas posibles. Añade más
-                  detalles para afinar el resultado.
-                </p>
-              )}
-
-              <h2
-                ref={resultsTitleRef}
-                tabIndex={-1}
-                className={styles.resultsTitle}>
-                Posibles causas:
-              </h2>
-              <ListaDiagnosticos
-                diagnosticos={diagnosticos}
-                totalSintomas={sintomasDetectados.length}
-                error={error}
-                onSeleccionar={handleSeleccionarCausa}
-              />
-            </div>
-          )}
-
-          {mostrarDetalle && (
-            <div ref={detailRef} className={styles.results}>
-              <DetalleDiagnostico
-                causa={causaSeleccionada.componente}
-                sintomasCoincidentes={causaSeleccionada.sintomasCoincidentes}
-                totalSintomas={sintomasDetectados.length}
-                onVolver={handleVolver}
-              />
-            </div>
+              <p className={styles.disclaimer}>
+                Este diagnóstico es orientativo y no sustituye la revisión de un
+                técnico. Si dudas, no abras ni manipules componentes internos.
+              </p>
+            </>
           )}
         </div>
-
-        <p className={styles.disclaimer}>
-          Este diagnóstico es orientativo y no sustituye la revisión de un
-          técnico. Si dudas, no abras ni manipules componentes internos.
-        </p>
       </div>
+      <Footer ruta={ruta} />
     </div>
   )
 }
