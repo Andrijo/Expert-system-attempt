@@ -1,6 +1,9 @@
+import { useEffect, useRef } from "react"
 import styles from "./DetalleDiagnostico.module.css"
 import { EXPLICACIONES } from "../data/explicaciones"
+import { etiquetaSintoma } from "../utils/extraerSintoma"
 import { getYoutubeSearchUrl } from "../utils/youtube"
+import { BadgeUrgencia } from "./BadgeUrgencia"
 
 export function DetalleDiagnostico({
   causa,
@@ -9,12 +12,17 @@ export function DetalleDiagnostico({
   onVolver,
 }) {
   const detalle = EXPLICACIONES[causa]
+  const titleRef = useRef(null)
+
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [])
 
   if (!detalle) {
     return (
       <div className={styles.container}>
         <button className={styles.backButton} onClick={onVolver}>
-          Regresar
+          ← Volver a los resultados
         </button>
         <p className={styles.text}>
           Actualmente, no hay información disponible para este problema.
@@ -26,10 +34,19 @@ export function DetalleDiagnostico({
   return (
     <div className={styles.container}>
       <button className={styles.backButton} onClick={onVolver}>
-        Regresar
+        ← Volver a los resultados
       </button>
 
-      <h2 className={styles.title}>{detalle.componente}</h2>
+      <h2 ref={titleRef} tabIndex={-1} className={styles.title}>
+        {detalle.componente}
+      </h2>
+      <BadgeUrgencia urgencia={detalle.urgencia} />
+
+      {detalle.alerta && (
+        <p role="alert" className={styles.alerta}>
+          <strong>Atención:</strong> {detalle.alerta}
+        </p>
+      )}
 
       <section className={styles.section}>
         <h3 className={styles.subtitle}>¿Por qué podría ser esta causa?</h3>
@@ -47,9 +64,9 @@ export function DetalleDiagnostico({
         </p>
 
         <div className={styles.chips}>
-          {sintomasCoincidentes.map((s, i) => (
-            <span key={i} className={styles.chip}>
-              {s.replaceAll("_", " ")}
+          {sintomasCoincidentes.map((s) => (
+            <span key={s} className={styles.chip}>
+              {etiquetaSintoma(s)}
             </span>
           ))}
         </div>
@@ -79,7 +96,7 @@ export function DetalleDiagnostico({
 
       {detalle.videos?.length > 0 && (
         <section className={styles.section}>
-          <h3 className={styles.subtitle}>Videos relacionados</h3>
+          <h3 className={styles.subtitle}>Buscar en YouTube</h3>
           <ul className={styles.videosList}>
             {detalle.videos.map((video, i) => (
               <li key={i} className={styles.videoItem}>
@@ -92,6 +109,9 @@ export function DetalleDiagnostico({
                     ▶
                   </span>
                   {video.titulo}
+                  <span className={styles.externo} aria-hidden="true">
+                    ↗
+                  </span>
                 </a>
               </li>
             ))}

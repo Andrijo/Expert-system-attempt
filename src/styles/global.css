@@ -13,6 +13,16 @@
   --black: #111111;
   --font-color: #111111;
   --font-family: "DM Sans", sans-serif;
+  --radius-card: 20px;
+  --color-muted: #5c5c5c;
+  --color-error: #b00020;
+
+  --urgencia-critica-bg: #c8321f;
+  --urgencia-critica-text: #f6f4f1;
+  --urgencia-moderada-bg: #f5d98a;
+  --urgencia-moderada-text: #4a3500;
+  --urgencia-preventiva-bg: #cfe5d3;
+  --urgencia-preventiva-text: #17391f;
 
   --glass-bg: linear-gradient(
     145deg,

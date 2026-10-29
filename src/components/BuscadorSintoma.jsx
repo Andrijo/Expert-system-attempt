@@ -1,11 +1,16 @@
 import styles from "./BuscadorSintoma.module.css"
 
-export function BuscadorSintoma({ value, onChange, onAnalizar, isLoading }) {
+export function BuscadorSintoma({
+  value,
+  onChange,
+  onAnalizar,
+  isLoading,
+  puedeAnalizar,
+}) {
   const handleSubmit = (e) => {
     e.preventDefault()
-    const valorLimpio = value.trim()
-    if (!valorLimpio || isLoading) return
-    onAnalizar(valorLimpio)
+    if (!puedeAnalizar || isLoading) return
+    onAnalizar()
   }
 
   return (
@@ -21,7 +26,7 @@ export function BuscadorSintoma({ value, onChange, onAnalizar, isLoading }) {
 
       <button
         type="submit"
-        disabled={isLoading || !value.trim()}
+        disabled={isLoading || !puedeAnalizar}
         className={styles.button}>
         {isLoading ? "Analizando…" : "Analizar"}
       </button>

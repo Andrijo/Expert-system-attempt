@@ -34,7 +34,7 @@ let cola = Promise.resolve()
 const consultarCoincidencias = (session, sintomas) => {
   const consulta = () =>
     new Promise((resolve, reject) => {
-      const query = `diagnostico_mayoria(Componente, [${sintomas.join(", ")}], Coincidencias, Coincidentes).`
+      const query = `diagnostico_mayoria(Componente, [${sintomas.join(", ")}], Coincidencias, Coincidentes, Puntaje).`
 
       session.query(query, {
         success: () => {
@@ -46,6 +46,7 @@ const consultarCoincidencias = (session, sintomas) => {
                 resultados.push({
                   componente: answer.lookup("Componente").id,
                   coincidencias: answer.lookup("Coincidencias").value,
+                  puntaje: answer.lookup("Puntaje").value,
                   sintomasCoincidentes: answer
                     .lookup("Coincidentes")
                     .toJavaScript(),
@@ -91,8 +92,11 @@ export function useDiagnosticoPC() {
   }, [])
 
   const analizarSintoma = useCallback(
-    async (texto) => {
-      if (typeof texto !== "string" || !texto.trim()) {
+    async (texto, sintomasElegidos = []) => {
+      if (
+        typeof texto !== "string" ||
+        (!texto.trim() && sintomasElegidos.length === 0)
+      ) {
         limpiarDiagnosticos()
         return
       }
@@ -106,7 +110,9 @@ export function useDiagnosticoPC() {
       }
 
       const id = ++busquedaActual.current
-      const sintomas = extraerSintomas(texto)
+      const sintomas = [
+        ...new Set([...extraerSintomas(texto), ...sintomasElegidos]),
+      ]
 
       setPalabraProhibida(null)
       setHasSearched(true)
@@ -124,14 +130,18 @@ export function useDiagnosticoPC() {
 
         if (id !== busquedaActual.current) return
 
-        // Orden estable: a igual número de coincidencias se mantiene
-        // el orden alfabético que devuelve Prolog.
-        resultados.sort((a, b) => b.coincidencias - a.coincidencias)
+        // Orden estable: a igual puntaje se mantiene el orden
+        // alfabético que devuelve Prolog.
+        resultados.sort(
+          (a, b) => b.puntaje - a.puntaje || b.coincidencias - a.coincidencias,
+        )
         setDiagnosticos(resultados)
       } catch (err) {
         console.error(err)
         if (id !== busquedaActual.current) return
-        setError(`Error al consultar la base de conocimiento: ${err}`)
+        setError(
+          "No se pudo consultar la base de conocimiento. Inténtalo de nuevo.",
+        )
       } finally {
         if (id === busquedaActual.current) setIsLoading(false)
       }

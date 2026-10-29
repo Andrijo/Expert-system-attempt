@@ -1,10 +1,13 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import styles from "./ListaDiagnosticos.module.css"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { EXPLICACIONES } from "../data/explicaciones"
+import { prefiereMenosMovimiento } from "../utils/movimiento"
+import { BadgeUrgencia } from "./BadgeUrgencia"
 
-gsap.registerPlugin(useGSAP)
+const PESO_MAXIMO = 5
+const VISIBLES_INICIAL = 5
 
 export function ListaDiagnosticos({
   diagnosticos,
@@ -13,10 +16,11 @@ export function ListaDiagnosticos({
   onSeleccionar,
 }) {
   const listRef = useRef(null)
+  const [verTodos, setVerTodos] = useState(false)
 
   useGSAP(
     () => {
-      if (!listRef.current) return
+      if (!listRef.current || prefiereMenosMovimiento()) return
       gsap.from(listRef.current.children, {
         y: 12,
         opacity: 0,
@@ -30,7 +34,11 @@ export function ListaDiagnosticos({
   )
 
   if (error) {
-    return <p className={styles.error}>{error}</p>
+    return (
+      <p role="alert" className={styles.error}>
+        {error}
+      </p>
+    )
   }
 
   if (!diagnosticos || diagnosticos.length === 0) {
@@ -41,48 +49,68 @@ export function ListaDiagnosticos({
     )
   }
 
-  return (
-    <ul ref={listRef} className={styles.list}>
-      {diagnosticos.map((diagnostico) => {
-        const { componente, coincidencias } = diagnostico
-        const nombre =
-          EXPLICACIONES[componente]?.componente ??
-          componente.replaceAll("_", " ")
-        const porcentaje = Math.round((coincidencias / totalSintomas) * 100)
+  const visibles = verTodos
+    ? diagnosticos
+    : diagnosticos.slice(0, VISIBLES_INICIAL)
+  const ocultos = diagnosticos.length - visibles.length
 
-        return (
-          <li key={componente}>
-            <button
-              type="button"
-              className={styles.item}
-              onClick={() => onSeleccionar?.(diagnostico)}>
-              <div className={styles.info}>
-                <span className={styles.name}>{nombre}</span>
-                <span className={styles.score}>
-                  {coincidencias} de {totalSintomas}{" "}
-                  {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
-                  {coincidencias === 1 ? "coincide" : "coinciden"}
-                </span>
-                <span
-                  className={styles.bar}
-                  role="meter"
-                  aria-label={`Coincidencia con ${nombre}`}
-                  aria-valuemin={0}
-                  aria-valuemax={totalSintomas}
-                  aria-valuenow={coincidencias}>
+  return (
+    <>
+      <ul ref={listRef} className={styles.list}>
+        {visibles.map((diagnostico) => {
+          const { componente, coincidencias, puntaje } = diagnostico
+          const detalle = EXPLICACIONES[componente]
+          const nombre = detalle?.componente ?? componente.replaceAll("_", " ")
+          const porcentaje = Math.round(
+            (puntaje / (PESO_MAXIMO * totalSintomas)) * 100,
+          )
+
+          return (
+            <li key={componente}>
+              <button
+                type="button"
+                className={styles.item}
+                onClick={() => onSeleccionar?.(diagnostico)}>
+                <div className={styles.info}>
+                  <span className={styles.header}>
+                    <span className={styles.name}>{nombre}</span>
+                    <BadgeUrgencia urgencia={detalle?.urgencia} />
+                  </span>
+                  <span className={styles.score}>
+                    {coincidencias} de {totalSintomas}{" "}
+                    {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
+                    {coincidencias === 1 ? "coincide" : "coinciden"}
+                  </span>
                   <span
-                    className={styles.barFill}
-                    style={{ width: `${porcentaje}%` }}
-                  />
+                    className={styles.bar}
+                    role="meter"
+                    aria-label={`Relevancia de ${nombre}`}
+                    aria-valuemin={0}
+                    aria-valuemax={PESO_MAXIMO * totalSintomas}
+                    aria-valuenow={puntaje}>
+                    <span
+                      className={styles.barFill}
+                      style={{ width: `${porcentaje}%` }}
+                    />
+                  </span>
+                </div>
+                <span className={styles.arrow} aria-hidden="true">
+                  →
                 </span>
-              </div>
-              <span className={styles.arrow} aria-hidden="true">
-                →
-              </span>
-            </button>
-          </li>
-        )
-      })}
-    </ul>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+
+      {ocultos > 0 && (
+        <button
+          type="button"
+          className={styles.more}
+          onClick={() => setVerTodos(true)}>
+          Ver {ocultos} {ocultos === 1 ? "causa más" : "causas más"}
+        </button>
+      )}
+    </>
   )
 }

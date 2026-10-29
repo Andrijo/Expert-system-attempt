@@ -3,11 +3,11 @@
 Aplicación de ejemplo en React + Vite que actúa como un pequeño sistema experto para diagnosticar posibles fallos de hardware en una PC a partir de la descripción de síntomas.
 
 Resumen rápido
-- El usuario escribe un síntoma en la UI.
+- El usuario escribe un síntoma en la UI y/o elige síntomas de una lista.
 - extraerSintomas convierte el texto en uno o varios 'síntomas' canónicos.
 - Se valida que el texto no contenga palabras prohibidas (lista en `src/data/palabrasProhibidas.js`).
-- Si es válido, se carga la base de conocimiento Prolog (`src/data/baseConocimiento.js`) en Tau Prolog (paquete npm, cargado bajo demanda en la primera búsqueda) y se consulta la regla `diagnostico_mayoria` para inferir posibles componentes fallidos.
-- Los resultados se muestran ordenados por número de síntomas coincidentes; al seleccionar una causa se muestra información detallada (explicaciones, pasos y videos).
+- Si es válido, se carga la base de conocimiento Prolog (`src/data/baseConocimiento.js`) en Tau Prolog (paquete npm, cargado bajo demanda en la primera búsqueda) y se consulta la regla `diagnostico_mayoria` para inferir posibles componentes fallidos. Cada relación componente–síntoma tiene un peso de 1 a 5 (5 = síntoma característico) y los resultados se ordenan por la suma de pesos.
+- Los resultados se muestran ordenados por puntaje, con su nivel de urgencia; al seleccionar una causa se muestra información detallada (explicaciones, pasos y videos).
 
 Estructura principal
 - `src/App.jsx` — Componente raíz y orquestador de la UI.
@@ -18,7 +18,7 @@ Estructura principal
 - `src/utils/contienePalabrasProhibidas.js` — Detección de palabras no permitidas.
 - `src/utils/tauProlog.js` — Carga de Tau Prolog y su módulo `lists`.
 - `src/styles/global.css` — Tokens de color y estilos globales.
-- `src/components/*` — Componentes visuales (BuscadorSintoma, ListaDiagnosticos, DetalleDiagnostico).
+- `src/components/*` — Componentes visuales (BuscadorSintoma, SelectorSintomas, ListaDiagnosticos, DetalleDiagnostico, BadgeUrgencia).
 - `index.html` — Punto de entrada de la app.
 
 Dependencias
@@ -33,7 +33,7 @@ Dependencias
   - eslint y plugins relacionados
 
 Requisitos
-- Node.js (recomendado 16+). Vite funciona mejor en Node 16 o superior.
+- Node.js 20.19 o superior (requisito de Vite 8).
 
 Instalación y ejecución
 1. Instalar dependencias:
@@ -59,7 +59,7 @@ Notas de uso
 - La sesión de Prolog se crea una sola vez y las consultas se encolan, porque una sesión de Tau solo atiende una consulta a la vez.
 
 Dónde modificar la lógica o el conocimiento
-- Añadir o ajustar hechos y reglas: editar `src/data/baseConocimiento.js`.
+- Añadir o ajustar hechos y reglas: editar `src/data/baseConocimiento.js`. Los hechos tienen la forma `causa(Componente, Sintoma, Peso)`.
 - Añadir/editar explicaciones y pasos: `src/data/explicaciones.js`.
 - Ajustar patrones de extracción de lenguaje natural: `src/utils/extraerSintoma.js`.
 - Editar lista de palabras prohibidas: `src/data/palabrasProhibidas.js`.

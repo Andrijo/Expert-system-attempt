@@ -7,18 +7,6 @@ export const EXPLICACIONES = {
       "Si uno o varios módulos fallan, los datos en tránsito se corrompen " +
       "o no pueden cargarse, causando cuelgues, pantallazos azules, pitidos " +
       "al arrancar y errores aleatorios que cambian entre reinicios.",
-    sintomasRelacionados: [
-      "pantallazo_azul",
-      "reinicios_constantes",
-      "pitidos_al_arrancar",
-      "pantalla_negra",
-      "congelamientos",
-      "sistema_lento",
-      "archivos_corruptos",
-      "error_no_bootable_device",
-      "parpadeo_monitor",
-      "apagado_repentino",
-    ],
     pasos: [
       "Apaga el equipo y resitúa los módulos de RAM (retira e inserta de nuevo).",
       "Si hay más de un módulo, prueba con uno solo a la vez en cada ranura.",
@@ -57,23 +45,11 @@ export const EXPLICACIONES = {
       "Un HDD con sectores dañados produce ruidos metálicos y lentitud extrema; " +
       "un SSD con celdas agotadas puede corromperse sin avisar. " +
       "Ambos pueden fallar en el arranque o perder archivos de forma silenciosa.",
-    sintomasRelacionados: [
-      "congelamientos",
-      "sistema_lento",
-      "error_no_bootable_device",
-      "ruidos_metalicos",
-      "archivos_corruptos",
-      "reinicios_constantes",
-      "pantalla_negra",
-      "apagado_repentino",
-      "pitidos_al_arrancar",
-      "calentamiento",
-    ],
     pasos: [
       "Ejecuta CrystalDiskInfo (Windows) o smartmontools (Linux/Mac) para leer el estado S.M.A.R.T.",
       "Presta atención a: Reallocated Sectors, Pending Sectors y Uncorrectable Errors.",
-      "Si alguno de esos valores es mayor a 0, haz una copia de seguridad de inmediato.",
-      "En Windows: ejecuta 'chkdsk C: /f /r' desde CMD como administrador.",
+      "Si alguno de esos valores es mayor a 0, haz una copia de seguridad (o clona el disco) de inmediato.",
+      "Solo después de la copia: en Windows ejecuta 'chkdsk C: /f /r' desde CMD como administrador. Esa opción fuerza mucho el disco y puede acelerar su fallo.",
       "En HDD: escucha si hay clics o rechinidos — son señal de fallo mecánico inminente.",
       "Considera reemplazar el disco si la salud S.M.A.R.T. es 'Caution' o 'Bad'.",
     ],
@@ -114,18 +90,6 @@ export const EXPLICACIONES = {
       "la CPU suba de temperatura aunque el ventilador funcione correctamente. " +
       "En casos graves, el calor acumulado puede desencadenar congelamientos, " +
       "reinicios y apagados de protección.",
-    sintomasRelacionados: [
-      "calentamiento",
-      "apagado_repentino",
-      "sistema_lento",
-      "congelamientos",
-      "reinicios_constantes",
-      "pantalla_negra",
-      "ruido_excesivo",
-      "pitidos_al_arrancar",
-      "parpadeo_monitor",
-      "pantallazo_azul",
-    ],
     pasos: [
       "Retira el disipador de la CPU con cuidado (desconecta el ventilador primero).",
       "Limpia la pasta vieja de la CPU y el disipador con alcohol isopropílico al 90%+ y un hisopo.",
@@ -147,7 +111,7 @@ export const EXPLICACIONES = {
       },
       {
         titulo: "Mejores pastas térmicas y cuál comprar",
-        query: "mejores pastas termicas cpu comparativa español 2024",
+        query: "mejores pastas termicas cpu comparativa español",
       },
     ],
   },
@@ -161,18 +125,6 @@ export const EXPLICACIONES = {
       "deja sin refrigeración al sistema. La BIOS detecta RPM en cero y puede " +
       "emitir pitidos, impedir el arranque o apagar el equipo por protección térmica. " +
       "El polvo acumulado también frena las RPM y eleva las temperaturas de toda la placa.",
-    sintomasRelacionados: [
-      "calentamiento",
-      "ruido_excesivo",
-      "apagado_repentino",
-      "pc_no_enciende",
-      "pitidos_al_arrancar",
-      "parpadeo_monitor",
-      "sistema_lento",
-      "congelamientos",
-      "reinicios_constantes",
-      "pantalla_negra",
-    ],
     pasos: [
       "Al encender, observa si todos los ventiladores (CPU, GPU, gabinete) giran.",
       "Limpia el polvo del disipador y los fans con aire comprimido cada 6–12 meses.",
@@ -182,7 +134,11 @@ export const EXPLICACIONES = {
       "Considera agregar ventiladores de gabinete si las temperaturas siguen altas.",
     ],
     urgencia: "critica",
-    herramientas: ["HWMonitor", "SpeedFan", "BIOS Fan Control"],
+    herramientas: [
+      "HWMonitor",
+      "FanControl",
+      "Control de ventiladores de la BIOS",
+    ],
     videos: [
       {
         titulo: "Cómo limpiar el PC con aire comprimido",
@@ -213,24 +169,13 @@ export const EXPLICACIONES = {
       "apaga el equipo por protección. Fallos internos de la CPU son menos comunes " +
       "pero pueden causar congelamientos, pantallazos azules o reinicios impredecibles. " +
       "Un error de arranque también puede indicar daño en los pines o el socket.",
-    sintomasRelacionados: [
-      "calentamiento",
-      "congelamientos",
-      "apagado_repentino",
-      "sistema_lento",
-      "pantalla_negra",
-      "pitidos_al_arrancar",
-      "pantallazo_azul",
-      "reinicios_constantes",
-      "error_no_bootable_device",
-      "parpadeo_monitor",
-    ],
     pasos: [
       "Instala HWMonitor o CoreTemp y revisa la temperatura de la CPU en reposo y bajo carga.",
       "En reposo: < 50 °C es normal. Bajo carga: < 85 °C es aceptable.",
       "Si supera 90 °C en reposo, la pasta térmica o el disipador son el problema inmediato.",
       "Verifica que el disipador esté firmemente sujeto y sin holgura.",
       "Descarta overclocking: regresa a valores por defecto en la BIOS si está activo.",
+      "No ejecutes pruebas de estrés (Prime95) si el equipo ya se apaga o supera 90 °C en reposo: arregla primero la refrigeración.",
       "Si las temperaturas son normales pero hay congelamientos, evalúa la RAM y el disco primero.",
       "Revisa visualmente los pines del socket (Intel) o de la CPU (AMD) buscando pines doblados.",
       "Un fallo de CPU propiamente dicho es raro; descarta otros componentes antes.",
@@ -266,18 +211,6 @@ export const EXPLICACIONES = {
       "Si entrega voltajes inestables o insuficientes, el sistema se apaga sin aviso, " +
       "no enciende, o puede generar reinicios y congelamientos aleatorios. " +
       "El olor a quemado indica un fallo grave e irreversible que puede dañar otros componentes.",
-    sintomasRelacionados: [
-      "apagado_repentino",
-      "pc_no_enciende",
-      "olor_a_quemado",
-      "reinicios_constantes",
-      "parpadeo_monitor",
-      "congelamientos",
-      "pantalla_negra",
-      "ruidos_metalicos",
-      "sistema_lento",
-      "pitidos_al_arrancar",
-    ],
     pasos: [
       "Huele el interior del gabinete: olor a quemado indica fallo grave — no enciendas más el equipo.",
       "Revisa que el cable de alimentación y el interruptor trasero de la PSU estén bien.",
@@ -288,6 +221,8 @@ export const EXPLICACIONES = {
       "Al comprar reemplazo, verifica que tenga la potencia suficiente (usa PCPartPicker).",
     ],
     urgencia: "critica",
+    alerta:
+      "Si notas olor a quemado, apaga y desconecta el equipo ahora y no lo vuelvas a encender hasta que lo revise un técnico.",
     herramientas: ["Tester de PSU", "Multímetro", "HWMonitor (voltajes)"],
     videos: [
       {
@@ -319,18 +254,6 @@ export const EXPLICACIONES = {
       "causar pantalla negra o cierres inesperados. " +
       "El sobrecalentamiento de la GPU también provoca apagados de protección " +
       "y congelamientos bajo carga gráfica.",
-    sintomasRelacionados: [
-      "artifacts_pantalla",
-      "pantalla_negra",
-      "parpadeo_monitor",
-      "calentamiento",
-      "fallo_driver",
-      "apagado_repentino",
-      "ruido_excesivo",
-      "congelamientos",
-      "reinicios_constantes",
-      "pantallazo_azul",
-    ],
     pasos: [
       "Reinstala los drivers usando DDU (Display Driver Uninstaller) en modo seguro, luego instala la versión más reciente.",
       "Resitúa la tarjeta en el slot PCIe (retira, limpia contactos con goma, reinserta).",
@@ -338,6 +261,7 @@ export const EXPLICACIONES = {
       "Conecta el monitor a la salida de video integrada de la placa base: si la imagen es normal, el problema es la GPU.",
       "Revisa la temperatura de la GPU con GPU-Z o MSI Afterburner bajo carga; no debería superar 90 °C.",
       "Si los artefactos aparecen incluso en BIOS o antes de cargar Windows, el fallo es de hardware.",
+      "No uses FurMark si la GPU ya se apaga o supera 90 °C: primero revisa la refrigeración.",
       "Como último recurso, prueba la GPU en otro equipo para confirmar si el fallo es del componente.",
     ],
     urgencia: "moderada",
@@ -376,18 +300,6 @@ export const EXPLICACIONES = {
       "o los circuitos de alimentación se degradan, puede impedir el arranque, " +
       "generar pitidos de POST, causar que la RAM o GPU no sean detectadas, " +
       "o producir apagados y reinicios completamente aleatorios e impredecibles.",
-    sintomasRelacionados: [
-      "pc_no_enciende",
-      "pitidos_al_arrancar",
-      "pantalla_negra",
-      "reinicios_constantes",
-      "error_no_bootable_device",
-      "olor_a_quemado",
-      "parpadeo_monitor",
-      "congelamientos",
-      "apagado_repentino",
-      "artifacts_pantalla",
-    ],
     pasos: [
       "Observa la placa con una linterna: busca condensadores abombados, manchas quemadas o pistas dañadas.",
       "Revisa los códigos de pitido POST de tu BIOS (consulta el manual de la placa) para identificar qué falla.",
@@ -399,6 +311,8 @@ export const EXPLICACIONES = {
       "Un fallo de placa madre es difícil de confirmar sin equipo de reemplazo; descarta CPU y RAM primero.",
     ],
     urgencia: "critica",
+    alerta:
+      "Si notas olor a quemado o condensadores quemados, apaga y desconecta el equipo ahora y no lo vuelvas a encender.",
     herramientas: ["Multímetro", "Tester de POST", "CPU-Z", "HWMonitor"],
     videos: [
       {
@@ -422,6 +336,46 @@ export const EXPLICACIONES = {
     ],
   },
 
+  // Monitor
+  monitor: {
+    componente: "Monitor / Cable de video",
+    descripcion:
+      "El monitor y su cable de video son el último eslabón entre la GPU y tus ojos. " +
+      "Un cable flojo o dañado, un puerto sucio o un panel con falla provocan pantalla negra, " +
+      "parpadeos y rayas aunque el resto del equipo funcione bien. " +
+      "Es la causa más barata y rápida de descartar antes de sospechar de la GPU o la placa.",
+    pasos: [
+      "Revisa que el monitor esté encendido y que la fuente de entrada (HDMI, DisplayPort, VGA) sea la correcta en su menú.",
+      "Desconecta y vuelve a conectar el cable de video en ambos extremos; comprueba que no tenga pines doblados.",
+      "Prueba con otro cable y, si puedes, con otro puerto de salida de la tarjeta gráfica.",
+      "Conecta el monitor a otro equipo, o conecta otro monitor o una TV a tu PC, para saber cuál de los dos falla.",
+      "Si el parpadeo aparece también en el menú propio del monitor, el panel está dañado.",
+      "Ajusta la frecuencia de actualización (Hz) a un valor soportado por el monitor y el cable.",
+    ],
+    urgencia: "moderada",
+    herramientas: [
+      "Otro cable de video",
+      "Otro monitor o TV",
+      "Menú OSD del monitor",
+    ],
+    videos: [
+      {
+        titulo: "Cómo saber si el problema es el monitor o la PC",
+        query:
+          "monitor sin señal como saber si es el monitor o la tarjeta grafica",
+      },
+      {
+        titulo: "Por qué parpadea mi monitor y cómo solucionarlo",
+        query:
+          "monitor parpadea solucion cable hz frecuencia actualizacion español",
+      },
+      {
+        titulo: "Diferencias entre HDMI, DisplayPort y VGA",
+        query: "diferencias hdmi displayport vga cual usar monitor",
+      },
+    ],
+  },
+
   // Batería
   bateria: {
     componente: "Batería (laptops)",
@@ -431,18 +385,6 @@ export const EXPLICACIONES = {
       "Una batería degradada puede causar apagados sin previo aviso incluso con porcentaje " +
       "alto mostrado en pantalla, impedir el arranque si está completamente descargada, " +
       "o generar calentamiento excesivo debajo del equipo.",
-    sintomasRelacionados: [
-      "apagado_repentino",
-      "pc_no_enciende",
-      "sistema_lento",
-      "reinicios_constantes",
-      "no_carga",
-      "calentamiento",
-      "parpadeo_monitor",
-      "pantalla_negra",
-      "congelamientos",
-      "pitidos_al_arrancar",
-    ],
     pasos: [
       "Conecta el cargador original y verifica que el LED de carga encienda; si no lo hace, prueba con otro cargador.",
       "En Windows: abre CMD y ejecuta 'powercfg /batteryreport' para ver el estado de salud de la batería.",
@@ -453,6 +395,8 @@ export const EXPLICACIONES = {
       "Reemplaza la batería con una original o de fabricante reconocido; evita baterías genéricas de bajo costo.",
     ],
     urgencia: "moderada",
+    alerta:
+      "Si la batería está hinchada, deja de usar y de cargar el equipo: puede incendiarse. Retírala con cuidado y llévala a un punto de reciclaje.",
     herramientas: ["powercfg /batteryreport", "BatteryInfoView", "HWMonitor"],
     videos: [
       {
@@ -483,18 +427,6 @@ export const EXPLICACIONES = {
       "provocar pantallazos azules, congelamientos y lentitud que imitan fallos de hardware. " +
       "Antes de reemplazar cualquier componente físico, siempre conviene descartar " +
       "una causa de software, ya que es más rápida y económica de resolver.",
-    sintomasRelacionados: [
-      "sistema_lento",
-      "congelamientos",
-      "pantallazo_azul",
-      "reinicios_constantes",
-      "archivos_corruptos",
-      "fallo_driver",
-      "error_no_bootable_device",
-      "pantalla_negra",
-      "apagado_repentino",
-      "parpadeo_monitor",
-    ],
     pasos: [
       "Ejecuta 'sfc /scannow' en CMD como administrador para reparar archivos de sistema corruptos.",
       "Ejecuta 'DISM /Online /Cleanup-Image /RestoreHealth' si sfc reporta errores que no pudo reparar.",

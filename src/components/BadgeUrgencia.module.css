@@ -1,0 +1,23 @@
+.badge {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.critica {
+  background: var(--urgencia-critica-bg);
+  color: var(--urgencia-critica-text);
+}
+
+.moderada {
+  background: var(--urgencia-moderada-bg);
+  color: var(--urgencia-moderada-text);
+}
+
+.preventiva {
+  background: var(--urgencia-preventiva-bg);
+  color: var(--urgencia-preventiva-text);
+}

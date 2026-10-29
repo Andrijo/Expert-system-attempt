@@ -14,6 +14,7 @@ const PATRONES = [
       "error azul",
     ],
     sintoma: "pantallazo_azul",
+    etiqueta: "Pantallazo azul",
   },
 
   // Pitidos al arrancar
@@ -35,6 +36,7 @@ const PATRONES = [
       "pitidos",
     ],
     sintoma: "pitidos_al_arrancar",
+    etiqueta: "Pitidos al arrancar",
   },
 
   // PC que no enciende
@@ -57,6 +59,7 @@ const PATRONES = [
       "no da imagen ni enciende",
     ],
     sintoma: "pc_no_enciende",
+    etiqueta: "No enciende",
   },
 
   // Pantalla negra
@@ -76,6 +79,7 @@ const PATRONES = [
       "monitor sin señal",
     ],
     sintoma: "pantalla_negra",
+    etiqueta: "Pantalla negra",
   },
 
   // Parpadeo monitor
@@ -96,6 +100,7 @@ const PATRONES = [
       "pantalla con destellos",
     ],
     sintoma: "parpadeo_monitor",
+    etiqueta: "Parpadeo de pantalla",
   },
 
   // Artefactos
@@ -119,6 +124,7 @@ const PATRONES = [
       "cuadriculado",
     ],
     sintoma: "artifacts_pantalla",
+    etiqueta: "Rayas o artefactos en pantalla",
   },
 
   // Fallo driver
@@ -139,6 +145,7 @@ const PATRONES = [
       "pantallazo por driver",
     ],
     sintoma: "fallo_driver",
+    etiqueta: "Fallo de driver",
   },
 
   // Error de arranque
@@ -162,6 +169,7 @@ const PATRONES = [
       "no encuentra el sistema operativo",
     ],
     sintoma: "error_no_bootable_device",
+    etiqueta: "No arranca el sistema",
   },
 
   // Reinicios constantes
@@ -181,6 +189,7 @@ const PATRONES = [
       "reinicia sin parar",
     ],
     sintoma: "reinicios_constantes",
+    etiqueta: "Reinicios constantes",
   },
 
   // Apagado repentino
@@ -201,6 +210,7 @@ const PATRONES = [
       "se apagan",
     ],
     sintoma: "apagado_repentino",
+    etiqueta: "Apagado repentino",
   },
 
   // Congelamientos
@@ -219,6 +229,7 @@ const PATRONES = [
       "se bloquea",
     ],
     sintoma: "congelamientos",
+    etiqueta: "Se congela",
   },
 
   // Sistema lento
@@ -247,6 +258,7 @@ const PATRONES = [
       "lento",
     ],
     sintoma: "sistema_lento",
+    etiqueta: "Sistema lento",
   },
 
   // Archivos corruptos
@@ -265,6 +277,7 @@ const PATRONES = [
       "documentos dañados",
     ],
     sintoma: "archivos_corruptos",
+    etiqueta: "Archivos corruptos",
   },
 
   // Calentamiento
@@ -289,6 +302,7 @@ const PATRONES = [
       "se calienta mucho",
     ],
     sintoma: "calentamiento",
+    etiqueta: "Se calienta",
   },
 
   // Ruidos metálicos
@@ -311,6 +325,7 @@ const PATRONES = [
       "se escucha el disco",
     ],
     sintoma: "ruidos_metalicos",
+    etiqueta: "Ruidos metálicos",
   },
 
   // Ruido excesivo
@@ -330,6 +345,7 @@ const PATRONES = [
       "sonido fuerte",
     ],
     sintoma: "ruido_excesivo",
+    etiqueta: "Ruido excesivo",
   },
 
   // Olor a quemado
@@ -348,6 +364,7 @@ const PATRONES = [
       "olor a quemado fuerte",
     ],
     sintoma: "olor_a_quemado",
+    etiqueta: "Olor a quemado",
   },
 
   // No carga
@@ -364,6 +381,7 @@ const PATRONES = [
       "batería no carga",
     ],
     sintoma: "no_carga",
+    etiqueta: "No carga la batería",
   },
 ]
 
@@ -379,6 +397,15 @@ const FRASES = PATRONES.flatMap(({ palabras, sintoma }) =>
     }
   }),
 ).sort((a, b) => b.longitud - a.longitud)
+
+export const SINTOMAS = PATRONES.map(({ sintoma, etiqueta }) => ({
+  id: sintoma,
+  etiqueta,
+}))
+
+const ETIQUETAS = Object.fromEntries(SINTOMAS.map((s) => [s.id, s.etiqueta]))
+
+export const etiquetaSintoma = (id) => ETIQUETAS[id] ?? id.replaceAll("_", " ")
 
 export const extraerSintomas = (texto) => {
   let restante = normalizarTexto(texto)

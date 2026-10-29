@@ -1,10 +1,13 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
 import { useDiagnosticoPC } from "./hooks/useDiagnosticoPC"
 import { BuscadorSintoma } from "./components/BuscadorSintoma"
 import { ListaDiagnosticos } from "./components/ListaDiagnosticos"
 import { DetalleDiagnostico } from "./components/DetalleDiagnostico"
+import { SelectorSintomas } from "./components/SelectorSintomas"
+import { etiquetaSintoma } from "./utils/extraerSintoma"
+import { prefiereMenosMovimiento } from "./utils/movimiento"
 import styles from "./App.module.css"
 
 gsap.registerPlugin(useGSAP)
@@ -19,12 +22,15 @@ const EJEMPLOS = [
 export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
+  const [sintomasElegidos, setSintomasElegidos] = useState([])
 
   const cardRef = useRef(null)
   const titleRef = useRef(null)
   const descriptionRef = useRef(null)
   const resultsRef = useRef(null)
   const detailRef = useRef(null)
+  const resultsTitleRef = useRef(null)
+  const restaurarFoco = useRef(false)
 
   const {
     diagnosticos,
@@ -37,20 +43,35 @@ export default function DiagnosticoPC() {
     limpiarDiagnosticos,
   } = useDiagnosticoPC()
 
+  const reiniciarSiVacio = (texto, elegidos) => {
+    if (texto.trim() || elegidos.length > 0) return
+    setCausaSeleccionada(null)
+    limpiarDiagnosticos()
+  }
+
   const handleChangeSintoma = (nuevoValor) => {
     setDraftSintoma(nuevoValor)
-    if (!nuevoValor.trim()) {
-      setCausaSeleccionada(null)
-      limpiarDiagnosticos()
-    }
+    reiniciarSiVacio(nuevoValor, sintomasElegidos)
+  }
+
+  const handleToggleSintoma = (id) => {
+    const nuevos = sintomasElegidos.includes(id)
+      ? sintomasElegidos.filter((s) => s !== id)
+      : [...sintomasElegidos, id]
+    setSintomasElegidos(nuevos)
+    reiniciarSiVacio(draftSintoma, nuevos)
   }
 
   const handlerAnalizar = () => {
     setCausaSeleccionada(null)
-    analizarSintoma(draftSintoma.trim())
+    analizarSintoma(draftSintoma.trim(), sintomasElegidos)
   }
 
   const handleSeleccionarCausa = (causa) => {
+    if (prefiereMenosMovimiento()) {
+      setCausaSeleccionada(causa)
+      return
+    }
     gsap.to(resultsRef.current, {
       y: -10,
       opacity: 0,
@@ -60,13 +81,25 @@ export default function DiagnosticoPC() {
   }
 
   const handleVolver = () => {
+    restaurarFoco.current = true
     setCausaSeleccionada(null)
   }
 
   const mostrarResultados = hasSearched && !causaSeleccionada && !isLoading
   const mostrarDetalle = !!causaSeleccionada
+  const hayOlorAQuemado = sintomasDetectados.includes("olor_a_quemado")
+  const puedeAnalizar =
+    draftSintoma.trim() !== "" || sintomasElegidos.length > 0
+
+  useEffect(() => {
+    if (mostrarResultados && restaurarFoco.current) {
+      restaurarFoco.current = false
+      resultsTitleRef.current?.focus()
+    }
+  }, [mostrarResultados])
 
   useGSAP(() => {
+    if (prefiereMenosMovimiento()) return
     const tl = gsap.timeline()
 
     tl.from(cardRef.current, {
@@ -99,6 +132,7 @@ export default function DiagnosticoPC() {
 
   useGSAP(() => {
     if (!resultsRef.current || !mostrarResultados) return
+    if (prefiereMenosMovimiento()) return
 
     gsap.fromTo(
       resultsRef.current,
@@ -118,6 +152,7 @@ export default function DiagnosticoPC() {
 
   useGSAP(() => {
     if (!detailRef.current || !mostrarDetalle) return
+    if (prefiereMenosMovimiento()) return
 
     gsap.fromTo(
       detailRef.current,
@@ -155,6 +190,12 @@ export default function DiagnosticoPC() {
           onChange={handleChangeSintoma}
           onAnalizar={handlerAnalizar}
           isLoading={isLoading}
+          puedeAnalizar={puedeAnalizar}
+        />
+
+        <SelectorSintomas
+          seleccionados={sintomasElegidos}
+          onToggle={handleToggleSintoma}
         />
 
         {palabraProhibida && (
@@ -189,16 +230,36 @@ export default function DiagnosticoPC() {
 
           {mostrarResultados && sintomasDetectados.length > 0 && (
             <div ref={resultsRef} className={styles.results}>
+              {hayOlorAQuemado && (
+                <p role="alert" className={styles.safetyAlert}>
+                  <strong>Atención:</strong> el olor a quemado puede indicar un
+                  riesgo de incendio. Apaga y desconecta el equipo ahora y no lo
+                  vuelvas a encender hasta que lo revise un técnico.
+                </p>
+              )}
+
               <div className={styles.chips}>
                 Síntomas detectados:
                 {sintomasDetectados.map((s) => (
                   <span key={s} className={styles.chip}>
-                    {s.replaceAll("_", " ")}
+                    {etiquetaSintoma(s)}
                   </span>
                 ))}
               </div>
 
-              <h2 className={styles.resultsTitle}>Posibles causas:</h2>
+              {sintomasDetectados.length === 1 && (
+                <p className={styles.hint}>
+                  Con un solo síntoma hay muchas causas posibles. Añade más
+                  detalles para afinar el resultado.
+                </p>
+              )}
+
+              <h2
+                ref={resultsTitleRef}
+                tabIndex={-1}
+                className={styles.resultsTitle}>
+                Posibles causas:
+              </h2>
               <ListaDiagnosticos
                 diagnosticos={diagnosticos}
                 totalSintomas={sintomasDetectados.length}
@@ -219,6 +280,11 @@ export default function DiagnosticoPC() {
             </div>
           )}
         </div>
+
+        <p className={styles.disclaimer}>
+          Este diagnóstico es orientativo y no sustituye la revisión de un
+          técnico. Si dudas, no abras ni manipules componentes internos.
+        </p>
       </div>
     </div>
   )

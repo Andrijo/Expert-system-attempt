@@ -7,14 +7,41 @@
 
 .backButton {
   align-self: flex-start;
-  border: 1px solid var(--color-primary-dark);
-  background: var(--color-secondary);
-  width: 100%;
-  color: var(--color-primary);
-  border-radius: 4px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--font-color);
   font-family: var(--font-family);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
-  padding: 12px;
+}
+
+.backButton:hover {
+  color: var(--color-secondary);
+}
+
+.backButton:focus-visible,
+.title:focus-visible,
+.videoLink:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.alerta {
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 4px solid var(--color-secondary);
+  border-radius: 4px;
+  background: var(--urgencia-critica-bg);
+  color: var(--urgencia-critica-text);
+  font-size: 0.85rem;
+}
+
+.externo {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .title {
@@ -56,10 +83,9 @@
 .chip {
   background: var(--color-secondary);
   color: var(--color-primary);
-  border-radius: 4px;
-  padding: 6px 10px;
+  border-radius: var(--radius-card);
+  padding: 6px 14px;
   font-size: 0.75rem;
-  text-transform: capitalize;
 }
 
 .videosList {

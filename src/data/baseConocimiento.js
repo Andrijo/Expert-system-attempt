@@ -3,127 +3,129 @@
 export const BASE_CONOCIMIENTO = `
   :- use_module(library(lists)).
 
-  % Hechos
+  % Hechos: causa(Componente, Sintoma, Peso)
+  % Peso de 1 a 5: 5 = síntoma característico del componente,
+  % 1 = síntoma genérico que puede aparecer por muchas causas.
 
-  % Memoria RAM 
-  causa(memoria_ram, pantallazo_azul).
-  causa(memoria_ram, reinicios_constantes).
-  causa(memoria_ram, pitidos_al_arrancar).
-  causa(memoria_ram, pantalla_negra).
-  causa(memoria_ram, congelamientos).
-  causa(memoria_ram, sistema_lento).
-  causa(memoria_ram, archivos_corruptos).
-  causa(memoria_ram, error_no_bootable_device).
-  causa(memoria_ram, parpadeo_monitor).
-  causa(memoria_ram, apagado_repentino).
+  % Memoria RAM
+  causa(memoria_ram, pitidos_al_arrancar, 5).
+  causa(memoria_ram, pantallazo_azul, 4).
+  causa(memoria_ram, reinicios_constantes, 3).
+  causa(memoria_ram, pantalla_negra, 3).
+  causa(memoria_ram, congelamientos, 3).
+  causa(memoria_ram, archivos_corruptos, 3).
+  causa(memoria_ram, sistema_lento, 2).
+  causa(memoria_ram, error_no_bootable_device, 2).
+  causa(memoria_ram, apagado_repentino, 1).
+  causa(memoria_ram, parpadeo_monitor, 1).
 
   % Disco Duro / SSD
-  causa(disco_duro, congelamientos).
-  causa(disco_duro, sistema_lento).
-  causa(disco_duro, error_no_bootable_device).
-  causa(disco_duro, ruidos_metalicos).
-  causa(disco_duro, archivos_corruptos).
-  causa(disco_duro, reinicios_constantes).
-  causa(disco_duro, pantalla_negra).
-  causa(disco_duro, apagado_repentino).
-  causa(disco_duro, pitidos_al_arrancar).
-  causa(disco_duro, calentamiento).
+  causa(disco_duro, error_no_bootable_device, 5).
+  causa(disco_duro, ruidos_metalicos, 5).
+  causa(disco_duro, archivos_corruptos, 5).
+  causa(disco_duro, congelamientos, 3).
+  causa(disco_duro, sistema_lento, 3).
+  causa(disco_duro, reinicios_constantes, 2).
+  causa(disco_duro, pantalla_negra, 1).
+  causa(disco_duro, apagado_repentino, 1).
 
-  % Ventilador / Refrigeración 
-  causa(ventilador, calentamiento).
-  causa(ventilador, ruido_excesivo).
-  causa(ventilador, apagado_repentino).
-  causa(ventilador, pc_no_enciende).
-  causa(ventilador, pitidos_al_arrancar).
-  causa(ventilador, parpadeo_monitor).
-  causa(ventilador, sistema_lento).
-  causa(ventilador, congelamientos).
-  causa(ventilador, reinicios_constantes).
-  causa(ventilador, pantalla_negra).
+  % Ventilador / Refrigeración
+  causa(ventilador, ruido_excesivo, 5).
+  causa(ventilador, calentamiento, 4).
+  causa(ventilador, apagado_repentino, 3).
+  causa(ventilador, pitidos_al_arrancar, 3).
+  causa(ventilador, sistema_lento, 2).
+  causa(ventilador, congelamientos, 2).
+  causa(ventilador, reinicios_constantes, 2).
+  causa(ventilador, parpadeo_monitor, 1).
+  causa(ventilador, pantalla_negra, 1).
 
-  % Pasta Térmica 
-  causa(pasta_termica, calentamiento).
-  causa(pasta_termica, apagado_repentino).
-  causa(pasta_termica, sistema_lento).
-  causa(pasta_termica, congelamientos).
-  causa(pasta_termica, reinicios_constantes).
-  causa(pasta_termica, pantalla_negra).
-  causa(pasta_termica, ruido_excesivo).
-  causa(pasta_termica, pitidos_al_arrancar).
-  causa(pasta_termica, parpadeo_monitor).
-  causa(pasta_termica, pantallazo_azul).
+  % Pasta Térmica
+  causa(pasta_termica, calentamiento, 5).
+  causa(pasta_termica, apagado_repentino, 3).
+  causa(pasta_termica, sistema_lento, 2).
+  causa(pasta_termica, congelamientos, 2).
+  causa(pasta_termica, reinicios_constantes, 2).
+  causa(pasta_termica, pantalla_negra, 1).
 
-  % Procesador / CPU 
-  causa(procesador, calentamiento).
-  causa(procesador, congelamientos).
-  causa(procesador, apagado_repentino).
-  causa(procesador, sistema_lento).
-  causa(procesador, pantalla_negra).
-  causa(procesador, pitidos_al_arrancar).
-  causa(procesador, pantallazo_azul).
-  causa(procesador, reinicios_constantes).
-  causa(procesador, error_no_bootable_device).
-  causa(procesador, parpadeo_monitor).
+  % Procesador / CPU
+  causa(procesador, calentamiento, 3).
+  causa(procesador, pitidos_al_arrancar, 3).
+  causa(procesador, congelamientos, 2).
+  causa(procesador, apagado_repentino, 2).
+  causa(procesador, sistema_lento, 2).
+  causa(procesador, pantalla_negra, 2).
+  causa(procesador, pantallazo_azul, 2).
+  causa(procesador, reinicios_constantes, 2).
+  causa(procesador, error_no_bootable_device, 1).
+  causa(procesador, parpadeo_monitor, 1).
 
-  % Fuente de Poder / PSU 
-  causa(fuente_poder, apagado_repentino).
-  causa(fuente_poder, pc_no_enciende).
-  causa(fuente_poder, olor_a_quemado).
-  causa(fuente_poder, reinicios_constantes).
-  causa(fuente_poder, parpadeo_monitor).
-  causa(fuente_poder, congelamientos).
-  causa(fuente_poder, pantalla_negra).
-  causa(fuente_poder, ruidos_metalicos).
-  causa(fuente_poder, sistema_lento).
-  causa(fuente_poder, pitidos_al_arrancar).
+  % Fuente de Poder / PSU
+  causa(fuente_poder, pc_no_enciende, 5).
+  causa(fuente_poder, olor_a_quemado, 5).
+  causa(fuente_poder, apagado_repentino, 4).
+  causa(fuente_poder, reinicios_constantes, 3).
+  causa(fuente_poder, parpadeo_monitor, 2).
+  causa(fuente_poder, congelamientos, 2).
+  causa(fuente_poder, pantalla_negra, 2).
+  causa(fuente_poder, ruido_excesivo, 2).
+  causa(fuente_poder, pitidos_al_arrancar, 2).
+  causa(fuente_poder, sistema_lento, 1).
 
-  % Tarjeta Gráfica / GPU 
-  causa(tarjeta_grafica, artifacts_pantalla).
-  causa(tarjeta_grafica, pantalla_negra).
-  causa(tarjeta_grafica, parpadeo_monitor).
-  causa(tarjeta_grafica, calentamiento).
-  causa(tarjeta_grafica, fallo_driver).
-  causa(tarjeta_grafica, apagado_repentino).
-  causa(tarjeta_grafica, ruido_excesivo).
-  causa(tarjeta_grafica, congelamientos).
-  causa(tarjeta_grafica, reinicios_constantes).
-  causa(tarjeta_grafica, pantallazo_azul).
+  % Tarjeta Gráfica / GPU
+  causa(tarjeta_grafica, artifacts_pantalla, 5).
+  causa(tarjeta_grafica, fallo_driver, 5).
+  causa(tarjeta_grafica, parpadeo_monitor, 4).
+  causa(tarjeta_grafica, pantalla_negra, 3).
+  causa(tarjeta_grafica, calentamiento, 3).
+  causa(tarjeta_grafica, pantallazo_azul, 3).
+  causa(tarjeta_grafica, apagado_repentino, 2).
+  causa(tarjeta_grafica, ruido_excesivo, 2).
+  causa(tarjeta_grafica, congelamientos, 2).
+  causa(tarjeta_grafica, reinicios_constantes, 2).
+
+  % Monitor / Cable de video
+  causa(monitor, parpadeo_monitor, 5).
+  causa(monitor, pantalla_negra, 4).
+  causa(monitor, artifacts_pantalla, 3).
 
   % Placa Madre / Motherboard
-  causa(placa_madre, pc_no_enciende).
-  causa(placa_madre, pitidos_al_arrancar).
-  causa(placa_madre, pantalla_negra).
-  causa(placa_madre, reinicios_constantes).
-  causa(placa_madre, error_no_bootable_device).
-  causa(placa_madre, olor_a_quemado).
-  causa(placa_madre, parpadeo_monitor).
-  causa(placa_madre, congelamientos).
-  causa(placa_madre, apagado_repentino).
-  causa(placa_madre, artifacts_pantalla).
+  causa(placa_madre, pc_no_enciende, 4).
+  causa(placa_madre, pitidos_al_arrancar, 4).
+  causa(placa_madre, olor_a_quemado, 4).
+  causa(placa_madre, pantalla_negra, 2).
+  causa(placa_madre, reinicios_constantes, 2).
+  causa(placa_madre, error_no_bootable_device, 2).
+  causa(placa_madre, congelamientos, 2).
+  causa(placa_madre, apagado_repentino, 2).
+  causa(placa_madre, parpadeo_monitor, 1).
+  causa(placa_madre, artifacts_pantalla, 1).
 
-  % Batería (laptops) 
-  causa(bateria, apagado_repentino).
-  causa(bateria, pc_no_enciende).
-  causa(bateria, sistema_lento).
-  causa(bateria, reinicios_constantes).
-  causa(bateria, no_carga).
-  causa(bateria, calentamiento).
-  causa(bateria, parpadeo_monitor).
-  causa(bateria, pantalla_negra).
-  causa(bateria, congelamientos).
-  causa(bateria, pitidos_al_arrancar).
+  % Batería (laptops)
+  causa(bateria, no_carga, 5).
+  causa(bateria, apagado_repentino, 3).
+  causa(bateria, pc_no_enciende, 3).
+  causa(bateria, calentamiento, 3).
+  causa(bateria, reinicios_constantes, 2).
+  causa(bateria, sistema_lento, 1).
+  causa(bateria, pantalla_negra, 1).
+  causa(bateria, congelamientos, 1).
 
-  % Sistema Operativo / Software 
-  causa(sistema_operativo, sistema_lento).
-  causa(sistema_operativo, congelamientos).
-  causa(sistema_operativo, pantallazo_azul).
-  causa(sistema_operativo, reinicios_constantes).
-  causa(sistema_operativo, archivos_corruptos).
-  causa(sistema_operativo, fallo_driver).
-  causa(sistema_operativo, error_no_bootable_device).
-  causa(sistema_operativo, pantalla_negra).
-  causa(sistema_operativo, apagado_repentino).
-  causa(sistema_operativo, parpadeo_monitor).
+  % Sistema Operativo / Software
+  causa(sistema_operativo, pantallazo_azul, 4).
+  causa(sistema_operativo, fallo_driver, 4).
+  causa(sistema_operativo, sistema_lento, 3).
+  causa(sistema_operativo, congelamientos, 3).
+  causa(sistema_operativo, reinicios_constantes, 3).
+  causa(sistema_operativo, archivos_corruptos, 3).
+  causa(sistema_operativo, error_no_bootable_device, 3).
+  causa(sistema_operativo, pantalla_negra, 2).
+  causa(sistema_operativo, apagado_repentino, 1).
+  causa(sistema_operativo, parpadeo_monitor, 1).
+
+  % Versión sin peso, usada por las reglas que solo necesitan la relación.
+  causa(Componente, Sintoma) :-
+      causa(Componente, Sintoma, _).
 
 
   % Reglas de inferencia
@@ -230,13 +232,17 @@ export const BASE_CONOCIMIENTO = `
       member(Componente, Componentes).
 
   % Regla 11: Diagnóstico por Mayoría de Coincidencias
-  % Cuenta cuántos síntomas reportados coinciden con un componente
-  % y devuelve cuáles son. Permite ordenar los resultados desde React/JS.
-  diagnostico_mayoria(Componente, Sintomas, Coincidencias, Coincidentes) :-
+  % Cuenta cuántos síntomas reportados coinciden con un componente,
+  % devuelve cuáles son y suma sus pesos (Puntaje). El orden final
+  % por puntaje se hace desde React/JS.
+  diagnostico_mayoria(Componente, Sintomas, Coincidencias, Coincidentes, Puntaje) :-
       componente(Componente),
-      findall(S, (member(S, Sintomas), causa(Componente, S)), Coincidentes),
-      length(Coincidentes, Coincidencias),
-      Coincidencias > 0.
+      findall(S-P, (member(S, Sintomas), causa(Componente, S, P)), Pares),
+      Pares \\= [],
+      length(Pares, Coincidencias),
+      findall(S, member(S-_, Pares), Coincidentes),
+      findall(P, member(_-P, Pares), Pesos),
+      sum_list(Pesos, Puntaje).
 
   % Regla 12: Diagnóstico Prioritario por Síntoma Crítico
   % Entre varios componentes candidatos, se prioriza el que presenta
