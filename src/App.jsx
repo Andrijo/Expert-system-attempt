@@ -23,6 +23,13 @@ const EJEMPLOS = [
   "huele a quemado",
 ]
 
+const ALERTAS_SEGURIDAD = {
+  olor_a_quemado:
+    "el olor a quemado puede indicar un riesgo de incendio. Apaga y desconecta el equipo ahora y no lo vuelvas a encender hasta que lo revise un técnico.",
+  bateria_hinchada:
+    "una batería hinchada puede incendiarse. Desconecta el cargador, apaga el equipo y no lo cargues ni presiones la batería hasta que lo revise un técnico.",
+}
+
 export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
@@ -94,7 +101,9 @@ export default function DiagnosticoPC() {
 
   const mostrarResultados = hasSearched && !causaSeleccionada && !isLoading
   const mostrarDetalle = !!causaSeleccionada
-  const hayOlorAQuemado = sintomasDetectados.includes("olor_a_quemado")
+  const alertasSeguridad = sintomasDetectados.filter(
+    (s) => ALERTAS_SEGURIDAD[s],
+  )
   const puedeAnalizar =
     draftSintoma.trim() !== "" || sintomasElegidos.length > 0
 
@@ -251,14 +260,11 @@ export default function DiagnosticoPC() {
 
                 {mostrarResultados && sintomasDetectados.length > 0 && (
                   <div ref={resultsRef} className={styles.results}>
-                    {hayOlorAQuemado && (
-                      <p role="alert" className={styles.safetyAlert}>
-                        <strong>Atención:</strong> el olor a quemado puede
-                        indicar un riesgo de incendio. Apaga y desconecta el
-                        equipo ahora y no lo vuelvas a encender hasta que lo
-                        revise un técnico.
+                    {alertasSeguridad.map((s) => (
+                      <p key={s} role="alert" className={styles.safetyAlert}>
+                        <strong>Atención:</strong> {ALERTAS_SEGURIDAD[s]}
                       </p>
-                    )}
+                    ))}
 
                     <div className={styles.chips}>
                       Síntomas detectados:

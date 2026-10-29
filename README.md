@@ -54,6 +54,12 @@ Instalación y ejecución
 
    npm run preview
 
+5. Ejecutar los tests (Vitest):
+
+   npm run test
+
+   Cubren la extracción de síntomas (incluidas las negaciones), el filtro de lenguaje y la coherencia entre la base de conocimiento, las explicaciones y los síntomas reconocidos.
+
 Notas de uso
 - Tau Prolog se empaqueta con la app, así que funciona sin conexión. Su código asigna variables globales implícitas, que fallan en modo estricto (ESM); por eso `src/utils/tauProlog.js` lo evalúa como script clásico en lugar de importarlo directamente.
 - La sesión de Prolog se crea una sola vez y las consultas se encolan, porque una sesión de Tau solo atiende una consulta a la vez.
