@@ -100,15 +100,6 @@ export default function DiagnosticoPC() {
     analizar(ejemplo)
   }
 
-  const handleLimpiar = () => {
-    setDraftSintoma("")
-    setSintomasElegidos([])
-    setCausaSeleccionada(null)
-    setCausaPrevia(null)
-    setVerTodasCausas(false)
-    limpiarDiagnosticos()
-  }
-
   const handleSeleccionarCausa = (causa) => {
     if (prefiereMenosMovimiento()) {
       setCausaSeleccionada(causa)
@@ -246,7 +237,6 @@ export default function DiagnosticoPC() {
                 value={draftSintoma}
                 onChange={handleChangeSintoma}
                 onAnalizar={handleAnalizar}
-                onLimpiar={handleLimpiar}
                 onFocus={precargarMotor}
                 isLoading={isLoading}
                 puedeAnalizar={puedeAnalizar}

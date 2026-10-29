@@ -37,26 +37,6 @@
   cursor: pointer;
 }
 
-.secondary {
-  padding: 12px 20px;
-  font-size: 1rem;
-  font-family: var(--font-family);
-  color: var(--font-color);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  cursor: pointer;
-}
-
-.secondary:hover {
-  background: var(--color-primary-dark);
-}
-
-.secondary:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
-
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
@@ -69,8 +49,7 @@
   }
 
   .input,
-  .button,
-  .secondary {
+  .button {
     width: 100%;
   }
 }
