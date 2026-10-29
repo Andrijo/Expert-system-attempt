@@ -44,7 +44,7 @@
 }
 
 .summary:hover .accion {
-  color: var(--black);
+  color: var(--font-color);
 }
 
 .summary:focus-visible {
@@ -66,7 +66,7 @@
   padding: 0 6px;
   border-radius: 999px;
   background: var(--color-secondary);
-  color: var(--color-primary);
+  color: var(--color-on-accent);
   font-size: 0.7rem;
   text-align: center;
 }
@@ -104,5 +104,5 @@
 .activo:hover {
   background: var(--color-secondary);
   border-color: var(--color-secondary);
-  color: var(--color-primary);
+  color: var(--color-on-accent);
 }

@@ -91,7 +91,7 @@
 
 .chip {
   background: var(--color-secondary);
-  color: var(--color-primary);
+  color: var(--color-on-accent);
   border-radius: var(--radius-card);
   padding: 6px 14px;
   font-size: 0.75rem;
@@ -127,7 +127,7 @@
 
 .videoLink:hover {
   background-color: var(--color-secondary);
-  color: var(--color-primary);
+  color: var(--color-on-accent);
 }
 
 .videoIcon {

@@ -6,10 +6,12 @@ import { BuscadorSintoma } from "./components/BuscadorSintoma"
 import { ListaDiagnosticos } from "./components/ListaDiagnosticos"
 import { DetalleDiagnostico } from "./components/DetalleDiagnostico"
 import { SelectorSintomas } from "./components/SelectorSintomas"
+import { ToggleTema } from "./components/ToggleTema"
 import { Footer } from "./components/Footer"
 import { AcercaDe } from "./components/AcercaDe"
 import { FormularioFeedback } from "./components/FormularioFeedback"
 import { useRuta } from "./hooks/useRuta"
+import { useTema } from "./hooks/useTema"
 import { etiquetaSintoma } from "./utils/extraerSintoma"
 import { prefiereMenosMovimiento } from "./utils/movimiento"
 import styles from "./App.module.css"
@@ -53,6 +55,7 @@ export default function DiagnosticoPC() {
   const detailRef = useRef(null)
 
   const ruta = useRuta()
+  const { tema, alternar: alternarTema } = useTema()
   const rutaAnterior = useRef(ruta)
 
   const {
@@ -223,10 +226,13 @@ export default function DiagnosticoPC() {
           {ruta === "contacto" && <FormularioFeedback />}
           {ruta === "inicio" && (
             <>
-              <h1 ref={titleRef} tabIndex={-1} className={styles.title}>
-                Diagnostica
-                <span className={styles.subtitle}>tu PC</span>
-              </h1>
+              <div className={styles.header}>
+                <h1 ref={titleRef} tabIndex={-1} className={styles.title}>
+                  Diagnostica
+                  <span className={styles.subtitle}>tu PC</span>
+                </h1>
+                <ToggleTema tema={tema} onAlternar={alternarTema} />
+              </div>
 
               <p ref={descriptionRef} className={styles.description}>
                 Describe el problema que estás experimentando con tu computadora
