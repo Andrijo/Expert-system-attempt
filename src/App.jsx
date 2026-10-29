@@ -54,7 +54,7 @@ export default function DiagnosticoPC() {
     setCausaSeleccionada(null)
   }
 
-  const mostrarResultados = hasSearched && !causaSeleccionada
+  const mostrarResultados = hasSearched && !causaSeleccionada && !isLoading
   const mostrarDetalle = !!causaSeleccionada
 
   useGSAP(() => {
@@ -170,6 +170,7 @@ export default function DiagnosticoPC() {
             <h4 className={styles.resultsTitle}>Posibles causas:</h4>
             <ListaDiagnosticos
               diagnosticos={diagnosticos}
+              totalSintomas={sintomasDetectados.length}
               error={error}
               onSeleccionar={handleSeleccionarCausa}
             />
@@ -179,8 +180,9 @@ export default function DiagnosticoPC() {
         {mostrarDetalle && (
           <div ref={detailRef} className={styles.results}>
             <DetalleDiagnostico
-              causa={causaSeleccionada}
-              sintomasDetectados={sintomasDetectados}
+              causa={causaSeleccionada.componente}
+              sintomasCoincidentes={causaSeleccionada.sintomasCoincidentes}
+              totalSintomas={sintomasDetectados.length}
               onVolver={handleVolver}
             />
           </div>

@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "gsap": "^3.15.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "tau-prolog": "^0.3.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

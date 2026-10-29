@@ -1,0 +1,28 @@
+@font-face {
+  font-family: "DM Sans";
+  src: url("../assets/fonts/DMSans.woff2") format("woff2");
+  font-weight: 100 950;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-primary: #f2f4f3;
+  --color-primary-dark: #d9e0de;
+  --color-secondary: #282b4a;
+  --black: #000000;
+  --font-color: #000f08;
+  --font-family: "DM Sans", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--color-primary);
+}

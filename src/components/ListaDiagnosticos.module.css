@@ -1,11 +1,3 @@
-:global(:root) {
-  --color-primary: #f2f4f3;
-  --color-primary-dark: #d9e0de;
-  --color-secondary: #49111c;
-  --black: #000000;
-  --font-color: #000f08;
-}
-
 .error {
   color: #b00020;
 }
@@ -43,9 +35,35 @@
   transform: translateY(-1px);
 }
 
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-right: 14px;
+}
+
 .name {
-  text-transform: capitalize;
   color: var(--font-color);
+}
+
+.score {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.bar {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-primary-dark);
+  overflow: hidden;
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  background: var(--color-secondary);
 }
 
 .arrow {
