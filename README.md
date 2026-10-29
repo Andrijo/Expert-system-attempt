@@ -66,7 +66,7 @@ Dónde modificar la lógica o el conocimiento
 
 Problemas y solución rápida
 - No aparecen resultados después de buscar: compruebe la consola del navegador por errores (por ejemplo, fallos al cargar o parsear la base de conocimiento en Tau Prolog).
-- Mensaje de palabra no permitida: la búsqueda quedará bloqueada y se mostrará la palabra detectada.
+- Mensaje de lenguaje no permitido: la búsqueda quedará bloqueada hasta reformular el texto (no se repite la palabra detectada).
 - Si necesita ejecutar las consultas Prolog desde un entorno sin `window` (p. ej. SSR), la integración actual no funcionará sin adaptar el motor Prolog a un paquete compatible con Node.
 
 Licencia

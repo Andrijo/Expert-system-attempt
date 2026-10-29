@@ -43,7 +43,7 @@ export default function DiagnosticoPC() {
     diagnosticos,
     sintomasDetectados,
     error,
-    palabraProhibida,
+    lenguajeProhibido,
     isLoading,
     hasSearched,
     analizarSintoma,
@@ -218,10 +218,10 @@ export default function DiagnosticoPC() {
                 onToggle={handleToggleSintoma}
               />
 
-              {palabraProhibida && (
+              {lenguajeProhibido && (
                 <p role="alert" className={styles.errorMessage}>
-                  La palabra <strong>{palabraProhibida}</strong> no está
-                  permitida.
+                  Tu descripción contiene lenguaje no permitido. Reformúlala
+                  para poder analizarla.
                 </p>
               )}
 
