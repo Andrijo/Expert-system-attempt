@@ -10,29 +10,25 @@ export function Footer({ ruta }) {
   return (
     <footer className={styles.footer}>
       <div className={styles.content}>
-        <div className={styles.top}>
-          <div className={styles.info}>
-            <p className={styles.text}>
-              Los resultados son orientativos y no sustituyen la revisión de un
-              técnico.
-            </p>
-          </div>
+        <nav aria-label="Pie de página">
+          <ul className={styles.links}>
+            {ENLACES.map(({ ruta: destino, href, etiqueta }) => (
+              <li key={destino}>
+                <a
+                  href={href}
+                  className={styles.link}
+                  aria-current={ruta === destino ? "page" : undefined}>
+                  {etiqueta}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-          <nav aria-label="Pie de página">
-            <ul className={styles.links}>
-              {ENLACES.map(({ ruta: destino, href, etiqueta }) => (
-                <li key={destino}>
-                  <a
-                    href={href}
-                    className={styles.link}
-                    aria-current={ruta === destino ? "page" : undefined}>
-                    {etiqueta}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
+        <p className={styles.text}>
+          Los resultados son orientativos y no sustituyen la revisión de un
+          técnico.
+        </p>
 
         <div className={styles.bottom}>
           <p className={styles.copy}>
