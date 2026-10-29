@@ -8,7 +8,12 @@ export function SelectorSintomas({ seleccionados, onToggle }) {
         <span className={styles.pregunta}>¿No sabes cómo describirlo?</span>
         <span className={styles.accion}>Elige síntomas de la lista</span>
         {seleccionados.length > 0 && (
-          <span className={styles.count}>{seleccionados.length}</span>
+          <span className={styles.count}>
+            {seleccionados.length}
+            <span className={styles.srOnly}>
+              {seleccionados.length === 1 ? " seleccionado" : " seleccionados"}
+            </span>
+          </span>
         )}
       </summary>
 

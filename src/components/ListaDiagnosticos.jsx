@@ -71,7 +71,7 @@ export function ListaDiagnosticos({
                 type="button"
                 className={styles.item}
                 onClick={() => onSeleccionar?.(diagnostico)}>
-                <div className={styles.info}>
+                <span className={styles.info}>
                   <span className={styles.header}>
                     <span className={styles.name}>{nombre}</span>
                     <BadgeUrgencia urgencia={detalle?.urgencia} />
@@ -79,21 +79,16 @@ export function ListaDiagnosticos({
                   <span className={styles.score}>
                     {coincidencias} de {totalSintomas}{" "}
                     {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
-                    {coincidencias === 1 ? "coincide" : "coinciden"}
+                    {coincidencias === 1 ? "coincide" : "coinciden"} ·
+                    relevancia {porcentaje}%
                   </span>
-                  <span
-                    className={styles.bar}
-                    role="meter"
-                    aria-label={`Relevancia de ${nombre}`}
-                    aria-valuemin={0}
-                    aria-valuemax={PESO_MAXIMO * totalSintomas}
-                    aria-valuenow={puntaje}>
+                  <span className={styles.bar} aria-hidden="true">
                     <span
                       className={styles.barFill}
                       style={{ width: `${porcentaje}%` }}
                     />
                   </span>
-                </div>
+                </span>
                 <span className={styles.arrow} aria-hidden="true">
                   →
                 </span>

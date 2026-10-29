@@ -23,6 +23,15 @@ const EJEMPLOS = [
   "huele a quemado",
 ]
 
+const describirEstado = ({ isLoading, mostrarResultados, sintomas, causas, error }) => {
+  if (isLoading) return "Analizando síntomas…"
+  if (!mostrarResultados || error) return ""
+  if (sintomas === 0) return "No se reconoció ningún síntoma."
+  return causas === 1
+    ? "Se encontró 1 posible causa."
+    : `Se encontraron ${causas} posibles causas.`
+}
+
 const ALERTAS_SEGURIDAD = {
   olor_a_quemado:
     "el olor a quemado puede indicar un riesgo de incendio. Apaga y desconecta el equipo ahora y no lo vuelvas a encender hasta que lo revise un técnico.",
@@ -104,6 +113,13 @@ export default function DiagnosticoPC() {
   const alertasSeguridad = sintomasDetectados.filter(
     (s) => ALERTAS_SEGURIDAD[s],
   )
+  const mensajeEstado = describirEstado({
+    isLoading,
+    mostrarResultados,
+    sintomas: sintomasDetectados.length,
+    causas: diagnosticos.length,
+    error,
+  })
   const puedeAnalizar =
     draftSintoma.trim() !== "" || sintomasElegidos.length > 0
 
@@ -234,7 +250,11 @@ export default function DiagnosticoPC() {
                 </p>
               )}
 
-              <div aria-live="polite">
+              <p role="status" className={styles.srOnly}>
+                {mensajeEstado}
+              </p>
+
+              <div>
                 {mostrarResultados && sintomasDetectados.length === 0 && (
                   <div ref={resultsRef} className={styles.results}>
                     <h2 className={styles.resultsTitle}>
@@ -267,12 +287,16 @@ export default function DiagnosticoPC() {
                     ))}
 
                     <div className={styles.chips}>
-                      Síntomas detectados:
-                      {sintomasDetectados.map((s) => (
-                        <span key={s} className={styles.chip}>
-                          {etiquetaSintoma(s)}
-                        </span>
-                      ))}
+                      <span id="sintomas-detectados">Síntomas detectados:</span>
+                      <ul
+                        aria-labelledby="sintomas-detectados"
+                        className={styles.chipList}>
+                        {sintomasDetectados.map((s) => (
+                          <li key={s} className={styles.chip}>
+                            {etiquetaSintoma(s)}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
                     {sintomasDetectados.length === 1 && (
