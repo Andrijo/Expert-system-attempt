@@ -9,6 +9,13 @@ import styles from "./App.module.css"
 
 gsap.registerPlugin(useGSAP)
 
+const EJEMPLOS = [
+  "se calienta mucho",
+  "pantalla azul",
+  "no enciende",
+  "huele a quemado",
+]
+
 export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
@@ -32,8 +39,10 @@ export default function DiagnosticoPC() {
 
   const handleChangeSintoma = (nuevoValor) => {
     setDraftSintoma(nuevoValor)
-    setCausaSeleccionada(null)
-    limpiarDiagnosticos()
+    if (!nuevoValor.trim()) {
+      setCausaSeleccionada(null)
+      limpiarDiagnosticos()
+    }
   }
 
   const handlerAnalizar = () => {
@@ -132,8 +141,8 @@ export default function DiagnosticoPC() {
     <div className={styles.wrapper}>
       <div ref={cardRef} className={styles.card}>
         <h1 ref={titleRef} className={styles.title}>
-          Diagnóstico
-          <span className={styles.subtitle}>de PC</span>
+          Diagnóstica
+          <span className={styles.subtitle}>tu PC</span>
         </h1>
 
         <p ref={descriptionRef} className={styles.description}>
@@ -149,44 +158,67 @@ export default function DiagnosticoPC() {
         />
 
         {palabraProhibida && (
-          <p className={styles.errorMessage}>
+          <p role="alert" className={styles.errorMessage}>
             La palabra <strong>{palabraProhibida}</strong> no está permitida.
           </p>
         )}
 
-        {mostrarResultados && (
-          <div ref={resultsRef} className={styles.results}>
-            {sintomasDetectados.length > 0 && (
+        <div aria-live="polite">
+          {mostrarResultados && sintomasDetectados.length === 0 && (
+            <div ref={resultsRef} className={styles.results}>
+              <h2 className={styles.resultsTitle}>
+                No reconocí ningún síntoma.
+              </h2>
+              <p className={styles.help}>
+                Intenta describirlo con otras palabras. Por ejemplo:
+              </p>
+              <ul className={styles.examples}>
+                {EJEMPLOS.map((ejemplo) => (
+                  <li key={ejemplo}>
+                    <button
+                      type="button"
+                      className={styles.example}
+                      onClick={() => setDraftSintoma(ejemplo)}>
+                      {ejemplo}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {mostrarResultados && sintomasDetectados.length > 0 && (
+            <div ref={resultsRef} className={styles.results}>
               <div className={styles.chips}>
                 Síntomas detectados:
-                {sintomasDetectados.map((s, i) => (
-                  <span key={i} className={styles.chip}>
+                {sintomasDetectados.map((s) => (
+                  <span key={s} className={styles.chip}>
                     {s.replaceAll("_", " ")}
                   </span>
                 ))}
               </div>
-            )}
 
-            <h4 className={styles.resultsTitle}>Posibles causas:</h4>
-            <ListaDiagnosticos
-              diagnosticos={diagnosticos}
-              totalSintomas={sintomasDetectados.length}
-              error={error}
-              onSeleccionar={handleSeleccionarCausa}
-            />
-          </div>
-        )}
+              <h2 className={styles.resultsTitle}>Posibles causas:</h2>
+              <ListaDiagnosticos
+                diagnosticos={diagnosticos}
+                totalSintomas={sintomasDetectados.length}
+                error={error}
+                onSeleccionar={handleSeleccionarCausa}
+              />
+            </div>
+          )}
 
-        {mostrarDetalle && (
-          <div ref={detailRef} className={styles.results}>
-            <DetalleDiagnostico
-              causa={causaSeleccionada.componente}
-              sintomasCoincidentes={causaSeleccionada.sintomasCoincidentes}
-              totalSintomas={sintomasDetectados.length}
-              onVolver={handleVolver}
-            />
-          </div>
-        )}
+          {mostrarDetalle && (
+            <div ref={detailRef} className={styles.results}>
+              <DetalleDiagnostico
+                causa={causaSeleccionada.componente}
+                sintomasCoincidentes={causaSeleccionada.sintomasCoincidentes}
+                totalSintomas={sintomasDetectados.length}
+                onVolver={handleVolver}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

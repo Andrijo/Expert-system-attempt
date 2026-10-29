@@ -29,15 +29,15 @@ export function DetalleDiagnostico({
         Regresar
       </button>
 
-      <h3 className={styles.title}>{detalle.componente}</h3>
+      <h2 className={styles.title}>{detalle.componente}</h2>
 
       <section className={styles.section}>
-        <h4 className={styles.subtitle}>¿Por qué podría ser esta causa?</h4>
+        <h3 className={styles.subtitle}>¿Por qué podría ser esta causa?</h3>
         <p className={styles.text}>{detalle.descripcion}</p>
       </section>
 
       <section className={styles.section}>
-        <h4 className={styles.subtitle}>¿Cómo se llegó a esta conclusión?</h4>
+        <h3 className={styles.subtitle}>¿Cómo se llegó a esta conclusión?</h3>
         <p className={styles.text}>
           Se llegó a esta conclusión porque {sintomasCoincidentes.length} de{" "}
           {totalSintomas} {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
@@ -56,7 +56,7 @@ export function DetalleDiagnostico({
       </section>
 
       <section className={styles.section}>
-        <h4 className={styles.subtitle}>Pasos sugeridos</h4>
+        <h3 className={styles.subtitle}>Pasos sugeridos</h3>
         <ul className={styles.list}>
           {detalle.pasos.map((paso, i) => (
             <li key={i} className={styles.listItem}>
@@ -67,7 +67,7 @@ export function DetalleDiagnostico({
       </section>
 
       <section className={styles.section}>
-        <h4 className={styles.subtitle}>Herramientas sugeridas</h4>
+        <h3 className={styles.subtitle}>Herramientas sugeridas</h3>
         <ul className={styles.list}>
           {detalle.herramientas.map((herramienta, i) => (
             <li key={i} className={styles.listItem}>
@@ -79,7 +79,7 @@ export function DetalleDiagnostico({
 
       {detalle.videos?.length > 0 && (
         <section className={styles.section}>
-          <h4 className={styles.subtitle}>Videos relacionados</h4>
+          <h3 className={styles.subtitle}>Videos relacionados</h3>
           <ul className={styles.videosList}>
             {detalle.videos.map((video, i) => (
               <li key={i} className={styles.videoItem}>

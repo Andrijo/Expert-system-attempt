@@ -1,3 +1,5 @@
+import { escaparRegex, normalizarTexto } from "./normalizarTexto"
+
 const PATRONES = [
   // Pantallazo azul
   {
@@ -29,6 +31,8 @@ const PATRONES = [
       "emite pitidos",
       "beep al encender",
       "beeps",
+      "pitido",
+      "pitidos",
     ],
     sintoma: "pitidos_al_arrancar",
   },
@@ -38,8 +42,10 @@ const PATRONES = [
     palabras: [
       "no enciende",
       "no prende",
-      "no hace nada",
-      "no pasa nada",
+      "no hace nada al encender",
+      "no hace nada al prenderla",
+      "no pasa nada al encender",
+      "no pasa nada al prenderla",
       "no arranca la pc",
       "no arranca la computadora",
       "no da señal",
@@ -64,6 +70,9 @@ const PATRONES = [
       "no hay imagen",
       "sin imagen",
       "sin video",
+      "no da video",
+      "no da imagen",
+      "no muestra imagen",
       "monitor sin señal",
     ],
     sintoma: "pantalla_negra",
@@ -188,6 +197,8 @@ const PATRONES = [
       "apagados repentinos",
       "se corta la energia",
       "se corta la luz",
+      "se apaga",
+      "se apagan",
     ],
     sintoma: "apagado_repentino",
   },
@@ -232,6 +243,8 @@ const PATRONES = [
       "pésimo rendimiento",
       "lentitud",
       "se pone lenta",
+      "lenta",
+      "lento",
     ],
     sintoma: "sistema_lento",
   },
@@ -354,14 +367,31 @@ const PATRONES = [
   },
 ]
 
+// Las frases más largas van primero para consumir el texto que ya explican
+// (p. ej. "no carga el sistema operativo" no debe activar "no carga").
+const FRASES = PATRONES.flatMap(({ palabras, sintoma }) =>
+  palabras.map((palabra) => {
+    const normalizada = normalizarTexto(palabra)
+    return {
+      sintoma,
+      longitud: normalizada.length,
+      regex: new RegExp(`\\b${escaparRegex(normalizada)}\\b`),
+    }
+  }),
+).sort((a, b) => b.longitud - a.longitud)
+
 export const extraerSintomas = (texto) => {
-  const normalizado = texto.toLowerCase().trim()
+  let restante = normalizarTexto(texto)
+  const encontrados = new Set()
 
-  const encontrados = PATRONES.filter(({ palabras }) =>
-    palabras.some((p) => normalizado.includes(p)),
-  ).map(({ sintoma }) => sintoma)
+  for (const { regex, sintoma } of FRASES) {
+    if (regex.test(restante)) {
+      encontrados.add(sintoma)
+      restante = restante.replace(regex, " ")
+    }
+  }
 
-  if (encontrados.length > 0) return encontrados
-  return []
-  //return [normalizado.replace(/[\s-]+/g, "_")]
+  return PATRONES.map(({ sintoma }) => sintoma).filter((s) =>
+    encontrados.has(s),
+  )
 }

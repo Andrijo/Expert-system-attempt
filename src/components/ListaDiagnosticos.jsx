@@ -51,31 +51,35 @@ export function ListaDiagnosticos({
         const porcentaje = Math.round((coincidencias / totalSintomas) * 100)
 
         return (
-          <li
-            key={componente}
-            className={styles.item}
-            onClick={() => onSeleccionar?.(diagnostico)}>
-            <div className={styles.info}>
-              <span className={styles.name}>{nombre}</span>
-              <span className={styles.score}>
-                {coincidencias} de {totalSintomas}{" "}
-                {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
-                {coincidencias === 1 ? "coincide" : "coinciden"}
-              </span>
-              <span
-                className={styles.bar}
-                role="meter"
-                aria-label={`Coincidencia con ${nombre}`}
-                aria-valuemin={0}
-                aria-valuemax={totalSintomas}
-                aria-valuenow={coincidencias}>
+          <li key={componente}>
+            <button
+              type="button"
+              className={styles.item}
+              onClick={() => onSeleccionar?.(diagnostico)}>
+              <div className={styles.info}>
+                <span className={styles.name}>{nombre}</span>
+                <span className={styles.score}>
+                  {coincidencias} de {totalSintomas}{" "}
+                  {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
+                  {coincidencias === 1 ? "coincide" : "coinciden"}
+                </span>
                 <span
-                  className={styles.barFill}
-                  style={{ width: `${porcentaje}%` }}
-                />
+                  className={styles.bar}
+                  role="meter"
+                  aria-label={`Coincidencia con ${nombre}`}
+                  aria-valuemin={0}
+                  aria-valuemax={totalSintomas}
+                  aria-valuenow={coincidencias}>
+                  <span
+                    className={styles.barFill}
+                    style={{ width: `${porcentaje}%` }}
+                  />
+                </span>
+              </div>
+              <span className={styles.arrow} aria-hidden="true">
+                →
               </span>
-            </div>
-            <span className={styles.arrow}>→</span>
+            </button>
           </li>
         )
       })}
