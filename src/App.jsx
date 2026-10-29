@@ -138,7 +138,7 @@ export default function DiagnosticoPC() {
 
         <p ref={descriptionRef} className={styles.description}>
           Describe el problema que estás experimentando con tu computadora y
-          nuestro sistema experto tratará de ayudarte
+          nuestro sistema experto tratará de ayudarte.
         </p>
 
         <BuscadorSintoma

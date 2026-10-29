@@ -1,14 +1,15 @@
 .container {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
 .input {
   flex: 1;
-  padding: 8px;
+  padding: 12px 14px;
+  font-size: 1rem;
   border-radius: 4px;
-  background-color: var(--color-primary);
+  background-color: var(--glass-bg-solid);
   backdrop-filter: blur(14px);
   border: 1px solid var(--color-primary-dark);
   font-family: var(--font-family);
@@ -21,7 +22,8 @@
 }
 
 .button {
-  padding: 8px 16px;
+  padding: 12px 22px;
+  font-size: 1rem;
   background-color: var(--color-secondary);
   color: var(--color-primary);
   border: none;
