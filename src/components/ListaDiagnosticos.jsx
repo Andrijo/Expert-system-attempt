@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import styles from "./ListaDiagnosticos.module.css"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
@@ -13,10 +13,17 @@ export function ListaDiagnosticos({
   diagnosticos,
   totalSintomas,
   error,
+  verTodos,
+  onVerTodos,
+  componenteEnfocado,
   onSeleccionar,
 }) {
   const listRef = useRef(null)
-  const [verTodos, setVerTodos] = useState(false)
+  const enfocadoRef = useRef(null)
+
+  useEffect(() => {
+    enfocadoRef.current?.focus()
+  }, [])
 
   useGSAP(
     () => {
@@ -68,6 +75,7 @@ export function ListaDiagnosticos({
           return (
             <li key={componente}>
               <button
+                ref={componente === componenteEnfocado ? enfocadoRef : null}
                 type="button"
                 className={styles.item}
                 onClick={() => onSeleccionar?.(diagnostico)}>
@@ -102,7 +110,7 @@ export function ListaDiagnosticos({
         <button
           type="button"
           className={styles.more}
-          onClick={() => setVerTodos(true)}>
+          onClick={onVerTodos}>
           Ver {ocultos} {ocultos === 1 ? "causa más" : "causas más"}
         </button>
       )}

@@ -43,14 +43,14 @@ export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
   const [sintomasElegidos, setSintomasElegidos] = useState([])
+  const [verTodasCausas, setVerTodasCausas] = useState(false)
+  const [causaPrevia, setCausaPrevia] = useState(null)
 
   const cardRef = useRef(null)
   const titleRef = useRef(null)
   const descriptionRef = useRef(null)
   const resultsRef = useRef(null)
   const detailRef = useRef(null)
-  const resultsTitleRef = useRef(null)
-  const restaurarFoco = useRef(false)
 
   const ruta = useRuta()
   const rutaAnterior = useRef(ruta)
@@ -64,6 +64,7 @@ export default function DiagnosticoPC() {
     hasSearched,
     analizarSintoma,
     limpiarDiagnosticos,
+    precargarMotor,
   } = useDiagnosticoPC()
 
   const reiniciarSiVacio = (texto, elegidos) => {
@@ -85,9 +86,27 @@ export default function DiagnosticoPC() {
     reiniciarSiVacio(draftSintoma, nuevos)
   }
 
-  const handlerAnalizar = () => {
+  const analizar = (texto) => {
     setCausaSeleccionada(null)
-    analizarSintoma(draftSintoma.trim(), sintomasElegidos)
+    setCausaPrevia(null)
+    setVerTodasCausas(false)
+    analizarSintoma(texto.trim(), sintomasElegidos)
+  }
+
+  const handleAnalizar = () => analizar(draftSintoma)
+
+  const handleEjemplo = (ejemplo) => {
+    setDraftSintoma(ejemplo)
+    analizar(ejemplo)
+  }
+
+  const handleLimpiar = () => {
+    setDraftSintoma("")
+    setSintomasElegidos([])
+    setCausaSeleccionada(null)
+    setCausaPrevia(null)
+    setVerTodasCausas(false)
+    limpiarDiagnosticos()
   }
 
   const handleSeleccionarCausa = (causa) => {
@@ -104,7 +123,7 @@ export default function DiagnosticoPC() {
   }
 
   const handleVolver = () => {
-    restaurarFoco.current = true
+    setCausaPrevia(causaSeleccionada.componente)
     setCausaSeleccionada(null)
   }
 
@@ -122,13 +141,6 @@ export default function DiagnosticoPC() {
   })
   const puedeAnalizar =
     draftSintoma.trim() !== "" || sintomasElegidos.length > 0
-
-  useEffect(() => {
-    if (mostrarResultados && restaurarFoco.current) {
-      restaurarFoco.current = false
-      resultsTitleRef.current?.focus()
-    }
-  }, [mostrarResultados])
 
   useEffect(() => {
     if (rutaAnterior.current !== ruta && ruta === "inicio") {
@@ -233,7 +245,9 @@ export default function DiagnosticoPC() {
               <BuscadorSintoma
                 value={draftSintoma}
                 onChange={handleChangeSintoma}
-                onAnalizar={handlerAnalizar}
+                onAnalizar={handleAnalizar}
+                onLimpiar={handleLimpiar}
+                onFocus={precargarMotor}
                 isLoading={isLoading}
                 puedeAnalizar={puedeAnalizar}
               />
@@ -255,6 +269,14 @@ export default function DiagnosticoPC() {
               </p>
 
               <div>
+                {isLoading && (
+                  <div className={styles.skeleton} aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                )}
+
                 {mostrarResultados && sintomasDetectados.length === 0 && (
                   <div ref={resultsRef} className={styles.results}>
                     <h2 className={styles.resultsTitle}>
@@ -269,7 +291,7 @@ export default function DiagnosticoPC() {
                           <button
                             type="button"
                             className={styles.example}
-                            onClick={() => setDraftSintoma(ejemplo)}>
+                            onClick={() => handleEjemplo(ejemplo)}>
                             {ejemplo}
                           </button>
                         </li>
@@ -306,16 +328,14 @@ export default function DiagnosticoPC() {
                       </p>
                     )}
 
-                    <h2
-                      ref={resultsTitleRef}
-                      tabIndex={-1}
-                      className={styles.resultsTitle}>
-                      Posibles causas:
-                    </h2>
+                    <h2 className={styles.resultsTitle}>Posibles causas:</h2>
                     <ListaDiagnosticos
                       diagnosticos={diagnosticos}
                       totalSintomas={sintomasDetectados.length}
                       error={error}
+                      verTodos={verTodasCausas}
+                      onVerTodos={() => setVerTodasCausas(true)}
+                      componenteEnfocado={causaPrevia}
                       onSeleccionar={handleSeleccionarCausa}
                     />
                   </div>

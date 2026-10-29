@@ -150,6 +150,11 @@ export function useDiagnosticoPC() {
     [limpiarDiagnosticos],
   )
 
+  // Descarga el motor en segundo plano para que la primera búsqueda no espere
+  const precargarMotor = useCallback(() => {
+    obtenerSesion().catch(() => {})
+  }, [])
+
   return {
     diagnosticos,
     sintomasDetectados,
@@ -159,5 +164,6 @@ export function useDiagnosticoPC() {
     hasSearched,
     analizarSintoma,
     limpiarDiagnosticos,
+    precargarMotor,
   }
 }

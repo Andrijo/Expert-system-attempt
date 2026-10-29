@@ -184,6 +184,33 @@
   font-family: var(--font-family);
 }
 
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.skeleton span {
+  height: 64px;
+  border-radius: var(--radius-card);
+  background: var(--glass-bg-item);
+  border: 1px solid var(--color-primary-dark);
+  animation: pulso 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulso {
+  to {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton span {
+    animation: none;
+  }
+}
+
 .srOnly {
   position: absolute;
   width: 1px;
@@ -224,6 +251,6 @@
 
   .chip {
     padding: 2px 8px;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
   }
 }
