@@ -1,7 +1,10 @@
 import { useState, useCallback, useRef } from "react"
 import { BASE_CONOCIMIENTO } from "../data/baseConocimiento"
-import { extraerSintomas } from "../utils/extraerSintoma"
-import { obtenerPalabraProhibida } from "../utils/contienePalabrasProhibidas"
+import { SINTOMAS, extraerSintomas } from "../utils/extraerSintoma"
+import { contieneLenguajeProhibido } from "../utils/contienePalabrasProhibidas"
+
+// Los síntomas se interpolan en la consulta Prolog, así que solo se aceptan ids conocidos
+const SINTOMAS_VALIDOS = new Set(SINTOMAS.map(({ id }) => id))
 
 // La base de conocimiento se carga una sola vez y la sesión se reutiliza.
 let sesionPromesa = null
@@ -74,7 +77,7 @@ export function useDiagnosticoPC() {
   const [diagnosticos, setDiagnosticos] = useState([])
   const [sintomasDetectados, setSintomasDetectados] = useState([])
   const [error, setError] = useState(null)
-  const [palabraProhibida, setPalabraProhibida] = useState(null)
+  const [lenguajeProhibido, setLenguajeProhibido] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 
@@ -86,7 +89,7 @@ export function useDiagnosticoPC() {
     setDiagnosticos([])
     setSintomasDetectados([])
     setError(null)
-    setPalabraProhibida(null)
+    setLenguajeProhibido(false)
     setIsLoading(false)
     setHasSearched(false)
   }, [])
@@ -101,20 +104,18 @@ export function useDiagnosticoPC() {
         return
       }
 
-      const palabraDetectada = obtenerPalabraProhibida(texto)
-
-      if (palabraDetectada) {
+      if (contieneLenguajeProhibido(texto)) {
         limpiarDiagnosticos()
-        setPalabraProhibida(palabraDetectada)
+        setLenguajeProhibido(true)
         return
       }
 
       const id = ++busquedaActual.current
       const sintomas = [
         ...new Set([...extraerSintomas(texto), ...sintomasElegidos]),
-      ]
+      ].filter((s) => SINTOMAS_VALIDOS.has(s))
 
-      setPalabraProhibida(null)
+      setLenguajeProhibido(false)
       setHasSearched(true)
       setSintomasDetectados(sintomas)
       setDiagnosticos([])
@@ -149,14 +150,20 @@ export function useDiagnosticoPC() {
     [limpiarDiagnosticos],
   )
 
+  // Descarga el motor en segundo plano para que la primera búsqueda no espere
+  const precargarMotor = useCallback(() => {
+    obtenerSesion().catch(() => {})
+  }, [])
+
   return {
     diagnosticos,
     sintomasDetectados,
     error,
-    palabraProhibida,
+    lenguajeProhibido,
     isLoading,
     hasSearched,
     analizarSintoma,
     limpiarDiagnosticos,
+    precargarMotor,
   }
 }

@@ -23,18 +23,34 @@ const EJEMPLOS = [
   "huele a quemado",
 ]
 
+const describirEstado = ({ isLoading, mostrarResultados, sintomas, causas, error }) => {
+  if (isLoading) return "Analizando síntomas…"
+  if (!mostrarResultados || error) return ""
+  if (sintomas === 0) return "No se reconoció ningún síntoma."
+  return causas === 1
+    ? "Se encontró 1 posible causa."
+    : `Se encontraron ${causas} posibles causas.`
+}
+
+const ALERTAS_SEGURIDAD = {
+  olor_a_quemado:
+    "el olor a quemado puede indicar un riesgo de incendio. Apaga y desconecta el equipo ahora y no lo vuelvas a encender hasta que lo revise un técnico.",
+  bateria_hinchada:
+    "una batería hinchada puede incendiarse. Desconecta el cargador, apaga el equipo y no lo cargues ni presiones la batería hasta que lo revise un técnico.",
+}
+
 export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
   const [sintomasElegidos, setSintomasElegidos] = useState([])
+  const [verTodasCausas, setVerTodasCausas] = useState(false)
+  const [causaPrevia, setCausaPrevia] = useState(null)
 
   const cardRef = useRef(null)
   const titleRef = useRef(null)
   const descriptionRef = useRef(null)
   const resultsRef = useRef(null)
   const detailRef = useRef(null)
-  const resultsTitleRef = useRef(null)
-  const restaurarFoco = useRef(false)
 
   const ruta = useRuta()
   const rutaAnterior = useRef(ruta)
@@ -43,11 +59,12 @@ export default function DiagnosticoPC() {
     diagnosticos,
     sintomasDetectados,
     error,
-    palabraProhibida,
+    lenguajeProhibido,
     isLoading,
     hasSearched,
     analizarSintoma,
     limpiarDiagnosticos,
+    precargarMotor,
   } = useDiagnosticoPC()
 
   const reiniciarSiVacio = (texto, elegidos) => {
@@ -69,9 +86,27 @@ export default function DiagnosticoPC() {
     reiniciarSiVacio(draftSintoma, nuevos)
   }
 
-  const handlerAnalizar = () => {
+  const analizar = (texto) => {
     setCausaSeleccionada(null)
-    analizarSintoma(draftSintoma.trim(), sintomasElegidos)
+    setCausaPrevia(null)
+    setVerTodasCausas(false)
+    analizarSintoma(texto.trim(), sintomasElegidos)
+  }
+
+  const handleAnalizar = () => analizar(draftSintoma)
+
+  const handleEjemplo = (ejemplo) => {
+    setDraftSintoma(ejemplo)
+    analizar(ejemplo)
+  }
+
+  const handleLimpiar = () => {
+    setDraftSintoma("")
+    setSintomasElegidos([])
+    setCausaSeleccionada(null)
+    setCausaPrevia(null)
+    setVerTodasCausas(false)
+    limpiarDiagnosticos()
   }
 
   const handleSeleccionarCausa = (causa) => {
@@ -88,22 +123,24 @@ export default function DiagnosticoPC() {
   }
 
   const handleVolver = () => {
-    restaurarFoco.current = true
+    setCausaPrevia(causaSeleccionada.componente)
     setCausaSeleccionada(null)
   }
 
   const mostrarResultados = hasSearched && !causaSeleccionada && !isLoading
   const mostrarDetalle = !!causaSeleccionada
-  const hayOlorAQuemado = sintomasDetectados.includes("olor_a_quemado")
+  const alertasSeguridad = sintomasDetectados.filter(
+    (s) => ALERTAS_SEGURIDAD[s],
+  )
+  const mensajeEstado = describirEstado({
+    isLoading,
+    mostrarResultados,
+    sintomas: sintomasDetectados.length,
+    causas: diagnosticos.length,
+    error,
+  })
   const puedeAnalizar =
     draftSintoma.trim() !== "" || sintomasElegidos.length > 0
-
-  useEffect(() => {
-    if (mostrarResultados && restaurarFoco.current) {
-      restaurarFoco.current = false
-      resultsTitleRef.current?.focus()
-    }
-  }, [mostrarResultados])
 
   useEffect(() => {
     if (rutaAnterior.current !== ruta && ruta === "inicio") {
@@ -208,7 +245,9 @@ export default function DiagnosticoPC() {
               <BuscadorSintoma
                 value={draftSintoma}
                 onChange={handleChangeSintoma}
-                onAnalizar={handlerAnalizar}
+                onAnalizar={handleAnalizar}
+                onLimpiar={handleLimpiar}
+                onFocus={precargarMotor}
                 isLoading={isLoading}
                 puedeAnalizar={puedeAnalizar}
               />
@@ -218,14 +257,26 @@ export default function DiagnosticoPC() {
                 onToggle={handleToggleSintoma}
               />
 
-              {palabraProhibida && (
+              {lenguajeProhibido && (
                 <p role="alert" className={styles.errorMessage}>
-                  La palabra <strong>{palabraProhibida}</strong> no está
-                  permitida.
+                  Tu descripción contiene lenguaje no permitido. Reformúlala
+                  para poder analizarla.
                 </p>
               )}
 
-              <div aria-live="polite">
+              <p role="status" className={styles.srOnly}>
+                {mensajeEstado}
+              </p>
+
+              <div>
+                {isLoading && (
+                  <div className={styles.skeleton} aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                )}
+
                 {mostrarResultados && sintomasDetectados.length === 0 && (
                   <div ref={resultsRef} className={styles.results}>
                     <h2 className={styles.resultsTitle}>
@@ -240,7 +291,7 @@ export default function DiagnosticoPC() {
                           <button
                             type="button"
                             className={styles.example}
-                            onClick={() => setDraftSintoma(ejemplo)}>
+                            onClick={() => handleEjemplo(ejemplo)}>
                             {ejemplo}
                           </button>
                         </li>
@@ -251,22 +302,23 @@ export default function DiagnosticoPC() {
 
                 {mostrarResultados && sintomasDetectados.length > 0 && (
                   <div ref={resultsRef} className={styles.results}>
-                    {hayOlorAQuemado && (
-                      <p role="alert" className={styles.safetyAlert}>
-                        <strong>Atención:</strong> el olor a quemado puede
-                        indicar un riesgo de incendio. Apaga y desconecta el
-                        equipo ahora y no lo vuelvas a encender hasta que lo
-                        revise un técnico.
+                    {alertasSeguridad.map((s) => (
+                      <p key={s} role="alert" className={styles.safetyAlert}>
+                        <strong>Atención:</strong> {ALERTAS_SEGURIDAD[s]}
                       </p>
-                    )}
+                    ))}
 
                     <div className={styles.chips}>
-                      Síntomas detectados:
-                      {sintomasDetectados.map((s) => (
-                        <span key={s} className={styles.chip}>
-                          {etiquetaSintoma(s)}
-                        </span>
-                      ))}
+                      <span id="sintomas-detectados">Síntomas detectados:</span>
+                      <ul
+                        aria-labelledby="sintomas-detectados"
+                        className={styles.chipList}>
+                        {sintomasDetectados.map((s) => (
+                          <li key={s} className={styles.chip}>
+                            {etiquetaSintoma(s)}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
                     {sintomasDetectados.length === 1 && (
@@ -276,16 +328,14 @@ export default function DiagnosticoPC() {
                       </p>
                     )}
 
-                    <h2
-                      ref={resultsTitleRef}
-                      tabIndex={-1}
-                      className={styles.resultsTitle}>
-                      Posibles causas:
-                    </h2>
+                    <h2 className={styles.resultsTitle}>Posibles causas:</h2>
                     <ListaDiagnosticos
                       diagnosticos={diagnosticos}
                       totalSintomas={sintomasDetectados.length}
                       error={error}
+                      verTodos={verTodasCausas}
+                      onVerTodos={() => setVerTodasCausas(true)}
+                      componenteEnfocado={causaPrevia}
                       onSeleccionar={handleSeleccionarCausa}
                     />
                   </div>

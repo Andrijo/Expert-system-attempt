@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import styles from "./ListaDiagnosticos.module.css"
 import { gsap } from "gsap"
 import { useGSAP } from "@gsap/react"
@@ -13,10 +13,17 @@ export function ListaDiagnosticos({
   diagnosticos,
   totalSintomas,
   error,
+  verTodos,
+  onVerTodos,
+  componenteEnfocado,
   onSeleccionar,
 }) {
   const listRef = useRef(null)
-  const [verTodos, setVerTodos] = useState(false)
+  const enfocadoRef = useRef(null)
+
+  useEffect(() => {
+    enfocadoRef.current?.focus()
+  }, [])
 
   useGSAP(
     () => {
@@ -68,10 +75,11 @@ export function ListaDiagnosticos({
           return (
             <li key={componente}>
               <button
+                ref={componente === componenteEnfocado ? enfocadoRef : null}
                 type="button"
                 className={styles.item}
                 onClick={() => onSeleccionar?.(diagnostico)}>
-                <div className={styles.info}>
+                <span className={styles.info}>
                   <span className={styles.header}>
                     <span className={styles.name}>{nombre}</span>
                     <BadgeUrgencia urgencia={detalle?.urgencia} />
@@ -79,21 +87,16 @@ export function ListaDiagnosticos({
                   <span className={styles.score}>
                     {coincidencias} de {totalSintomas}{" "}
                     {totalSintomas === 1 ? "síntoma" : "síntomas"}{" "}
-                    {coincidencias === 1 ? "coincide" : "coinciden"}
+                    {coincidencias === 1 ? "coincide" : "coinciden"} ·
+                    relevancia {porcentaje}%
                   </span>
-                  <span
-                    className={styles.bar}
-                    role="meter"
-                    aria-label={`Relevancia de ${nombre}`}
-                    aria-valuemin={0}
-                    aria-valuemax={PESO_MAXIMO * totalSintomas}
-                    aria-valuenow={puntaje}>
+                  <span className={styles.bar} aria-hidden="true">
                     <span
                       className={styles.barFill}
                       style={{ width: `${porcentaje}%` }}
                     />
                   </span>
-                </div>
+                </span>
                 <span className={styles.arrow} aria-hidden="true">
                   →
                 </span>
@@ -107,7 +110,7 @@ export function ListaDiagnosticos({
         <button
           type="button"
           className={styles.more}
-          onClick={() => setVerTodos(true)}>
+          onClick={onVerTodos}>
           Ver {ocultos} {ocultos === 1 ? "causa más" : "causas más"}
         </button>
       )}

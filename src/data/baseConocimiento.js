@@ -103,6 +103,7 @@ export const BASE_CONOCIMIENTO = `
 
   % Batería (laptops)
   causa(bateria, no_carga, 5).
+  causa(bateria, bateria_hinchada, 5).
   causa(bateria, apagado_repentino, 3).
   causa(bateria, pc_no_enciende, 3).
   causa(bateria, calentamiento, 3).
@@ -110,6 +111,10 @@ export const BASE_CONOCIMIENTO = `
   causa(bateria, sistema_lento, 1).
   causa(bateria, pantalla_negra, 1).
   causa(bateria, congelamientos, 1).
+
+  % Cargador / Adaptador de corriente (laptops)
+  causa(cargador, no_carga, 4).
+  causa(cargador, pc_no_enciende, 2).
 
   % Sistema Operativo / Software
   causa(sistema_operativo, pantallazo_azul, 4).
@@ -148,7 +153,8 @@ export const BASE_CONOCIMIENTO = `
       causa(Componente, Sintoma),
       member(Sintoma, [
           pc_no_enciende, apagado_repentino,
-          olor_a_quemado, pitidos_al_arrancar, ruidos_metalicos
+          olor_a_quemado, pitidos_al_arrancar, ruidos_metalicos,
+          bateria_hinchada
       ]).
 
   diagnostico_prioridad(Componente, Sintoma, moderada) :-
@@ -252,7 +258,8 @@ export const BASE_CONOCIMIENTO = `
       causa(Componente, Sintoma),
       member(Sintoma, [
           pc_no_enciende, apagado_repentino,
-          olor_a_quemado, pitidos_al_arrancar, ruidos_metalicos
+          olor_a_quemado, pitidos_al_arrancar, ruidos_metalicos,
+          bateria_hinchada
       ]).
 
   % Regla 13: Información Insuficiente

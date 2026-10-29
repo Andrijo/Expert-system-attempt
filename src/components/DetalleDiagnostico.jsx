@@ -112,6 +112,10 @@ export function DetalleDiagnostico({
                   <span className={styles.externo} aria-hidden="true">
                     ↗
                   </span>
+                  <span className={styles.srOnly}>
+                    {" "}
+                    (se abre en una pestaña nueva)
+                  </span>
                 </a>
               </li>
             ))}

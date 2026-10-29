@@ -57,6 +57,9 @@ const PATRONES = [
       "no inicia la pc",
       "no prende la pc",
       "no da imagen ni enciende",
+      "no arranca",
+      "no quiere encender",
+      "no quiere prender",
     ],
     sintoma: "pc_no_enciende",
     etiqueta: "No enciende",
@@ -77,6 +80,9 @@ const PATRONES = [
       "no da imagen",
       "no muestra imagen",
       "monitor sin señal",
+      "se apaga la pantalla",
+      "se apaga el monitor",
+      "la pantalla se apaga",
     ],
     sintoma: "pantalla_negra",
     etiqueta: "Pantalla negra",
@@ -89,15 +95,14 @@ const PATRONES = [
       "parpadea el monitor",
       "pantalla parpadea",
       "monitor parpadea",
-      "parpadea",
       "pantalla titila",
-      "titila",
-      "titileo",
       "la imagen parpadea",
       "pantalla intermitente",
       "destellos en pantalla",
       "flicker",
       "pantalla con destellos",
+      "monitor titila",
+      "pantalla parpadeando",
     ],
     sintoma: "parpadeo_monitor",
     etiqueta: "Parpadeo de pantalla",
@@ -187,6 +192,10 @@ const PATRONES = [
       "bucle de reinicio",
       "loop de reinicio",
       "reinicia sin parar",
+      "se reinicia sola",
+      "se reinicio solo",
+      "se reinicio sola",
+      "reinicia sola",
     ],
     sintoma: "reinicios_constantes",
     etiqueta: "Reinicios constantes",
@@ -205,9 +214,15 @@ const PATRONES = [
       "cierra todo de golpe",
       "apagados repentinos",
       "se corta la energia",
-      "se corta la luz",
-      "se apaga",
-      "se apagan",
+      "la pc se apaga",
+      "la computadora se apaga",
+      "la compu se apaga",
+      "la laptop se apaga",
+      "el equipo se apaga",
+      "se apago sola",
+      "se apago solo",
+      "se apago de golpe",
+      "se apago de repente",
     ],
     sintoma: "apagado_repentino",
     etiqueta: "Apagado repentino",
@@ -221,12 +236,22 @@ const PATRONES = [
       "congelamiento",
       "se queda colgada",
       "se queda colgado",
-      "no responde",
       "se cuelga",
       "se paraliza",
       "pantalla congelada",
       "se queda pegada",
       "se bloquea",
+      "pc no responde",
+      "computadora no responde",
+      "compu no responde",
+      "laptop no responde",
+      "windows no responde",
+      "deja de responder",
+      "se congelo",
+      "se trabo",
+      "se colgo",
+      "se tilda",
+      "se tildo",
     ],
     sintoma: "congelamientos",
     etiqueta: "Se congela",
@@ -254,6 +279,8 @@ const PATRONES = [
       "pésimo rendimiento",
       "lentitud",
       "se pone lenta",
+      "anda lenta",
+      "anda lento",
       "lenta",
       "lento",
     ],
@@ -300,6 +327,9 @@ const PATRONES = [
       "fan a tope",
       "se calienta demasiado",
       "se calienta mucho",
+      "se calento",
+      "se sobrecalento",
+      "se recalienta",
     ],
     sintoma: "calentamiento",
     etiqueta: "Se calienta",
@@ -343,6 +373,9 @@ const PATRONES = [
       "suena muy fuerte",
       "ruido fuerte",
       "sonido fuerte",
+      "hace ruido",
+      "ruidosa",
+      "ruidoso",
     ],
     sintoma: "ruido_excesivo",
     etiqueta: "Ruido excesivo",
@@ -383,6 +416,24 @@ const PATRONES = [
     sintoma: "no_carga",
     etiqueta: "No carga la batería",
   },
+
+  // Batería hinchada
+  {
+    palabras: [
+      "bateria hinchada",
+      "bateria inflada",
+      "bateria esta hinchada",
+      "bateria esta inflada",
+      "bateria abultada",
+      "se hincho la bateria",
+      "la bateria se hincho",
+      "bateria deformada",
+      "se levanta la tapa",
+      "touchpad levantado",
+    ],
+    sintoma: "bateria_hinchada",
+    etiqueta: "Batería hinchada",
+  },
 ]
 
 // Las frases más largas van primero para consumir el texto que ya explican
@@ -407,15 +458,31 @@ const ETIQUETAS = Object.fromEntries(SINTOMAS.map((s) => [s.id, s.etiqueta]))
 
 export const etiquetaSintoma = (id) => ETIQUETAS[id] ?? id.replaceAll("_", " ")
 
+const NEGACIONES = new Set(["no", "nunca", "jamas", "tampoco", "ni"])
+const SEPARADORES = /[,.;:!?]|\b(?:pero|aunque|sino|y|e)\b/
+const ALCANCE_NEGACION = 3
+
+// "no se calienta" niega el síntoma, salvo que un separador ("pero", una coma…)
+// abra otra cláusula entre la negación y la frase.
+const estaNegada = (texto, indice) => {
+  const clausula = texto.slice(0, indice).split(SEPARADORES).at(-1)
+  return clausula
+    .split(" ")
+    .filter(Boolean)
+    .slice(-ALCANCE_NEGACION)
+    .some((palabra) => NEGACIONES.has(palabra))
+}
+
 export const extraerSintomas = (texto) => {
   let restante = normalizarTexto(texto)
   const encontrados = new Set()
 
   for (const { regex, sintoma } of FRASES) {
-    if (regex.test(restante)) {
-      encontrados.add(sintoma)
-      restante = restante.replace(regex, " ")
-    }
+    const coincidencia = regex.exec(restante)
+    if (!coincidencia) continue
+
+    if (!estaNegada(restante, coincidencia.index)) encontrados.add(sintoma)
+    restante = restante.replace(regex, " ")
   }
 
   return PATRONES.map(({ sintoma }) => sintoma).filter((s) =>

@@ -98,7 +98,7 @@ export const EXPLICACIONES = {
       "Vuelve a montar el disipador con la presión correcta y en orden cruzado.",
       "Verifica temperaturas después con HWMonitor; en reposo deberían bajar 10–20 °C.",
     ],
-    urgencia: "preventiva",
+    urgencia: "moderada",
     herramientas: ["HWMonitor", "CoreTemp", "alcohol isopropílico 90%+"],
     videos: [
       {
@@ -133,7 +133,7 @@ export const EXPLICACIONES = {
       "Si el ventilador hace ruido de rodamiento, reemplázalo antes de que falle por completo.",
       "Considera agregar ventiladores de gabinete si las temperaturas siguen altas.",
     ],
-    urgencia: "critica",
+    urgencia: "moderada",
     herramientas: [
       "HWMonitor",
       "FanControl",
@@ -180,7 +180,7 @@ export const EXPLICACIONES = {
       "Revisa visualmente los pines del socket (Intel) o de la CPU (AMD) buscando pines doblados.",
       "Un fallo de CPU propiamente dicho es raro; descarta otros componentes antes.",
     ],
-    urgencia: "critica",
+    urgencia: "moderada",
     herramientas: ["HWMonitor", "CoreTemp", "CPU-Z", "Prime95 (stress test)"],
     videos: [
       {
@@ -464,6 +464,38 @@ export const EXPLICACIONES = {
         titulo: "Cómo reinstalar Windows sin perder archivos",
         query:
           "reinstalar windows sin perder archivos reparacion tutorial español",
+      },
+    ],
+  },
+
+  // Cargador
+  cargador: {
+    componente: "Cargador / Adaptador de corriente",
+    descripcion:
+      "El cargador convierte la corriente de la red en el voltaje que necesita la laptop. " +
+      "Un cable dañado, un conector flojo o un adaptador defectuoso impiden que la batería " +
+      "cargue y, si la batería está agotada, que el equipo encienda. Es una de las causas " +
+      "más comunes y baratas de resolver, así que conviene descartarla antes que la batería.",
+    pasos: [
+      "Prueba otro enchufe o regleta y comprueba que el LED del cargador o del equipo se encienda.",
+      "Revisa el cable en toda su longitud buscando cortes, dobleces o zonas calientes.",
+      "Comprueba que el conector entre firme en la laptop y que el puerto no tenga holgura ni suciedad.",
+      "Si tienes otro cargador original y compatible, prueba con él.",
+      "Verifica que la potencia (W) del cargador coincida con la que indica el fabricante del equipo.",
+      "Si el cargador se calienta en exceso, huele a quemado o hace ruido, deja de usarlo.",
+    ],
+    urgencia: "moderada",
+    alerta:
+      "Si el cargador se calienta en exceso, tiene el cable pelado o huele a quemado, desconéctalo y no lo vuelvas a usar.",
+    herramientas: ["Multímetro", "Cargador original de repuesto"],
+    videos: [
+      {
+        titulo: "Cómo saber si el cargador de tu laptop está fallando",
+        query: "como saber si el cargador de laptop esta dañado",
+      },
+      {
+        titulo: "Medir el voltaje de un cargador con multímetro",
+        query: "medir voltaje cargador laptop multimetro tutorial español",
       },
     ],
   },
