@@ -45,6 +45,7 @@ export default function DiagnosticoPC() {
   const [draftSintoma, setDraftSintoma] = useState("")
   const [causaSeleccionada, setCausaSeleccionada] = useState(null)
   const [sintomasElegidos, setSintomasElegidos] = useState([])
+  const [sintomasDescartados, setSintomasDescartados] = useState([])
   const [verTodasCausas, setVerTodasCausas] = useState(false)
   const [causaPrevia, setCausaPrevia] = useState(null)
 
@@ -78,6 +79,7 @@ export default function DiagnosticoPC() {
 
   const handleChangeSintoma = (nuevoValor) => {
     setDraftSintoma(nuevoValor)
+    setSintomasDescartados([])
     reiniciarSiVacio(nuevoValor, sintomasElegidos)
   }
 
@@ -86,21 +88,41 @@ export default function DiagnosticoPC() {
       ? sintomasElegidos.filter((s) => s !== id)
       : [...sintomasElegidos, id]
     setSintomasElegidos(nuevos)
+    setSintomasDescartados(sintomasDescartados.filter((s) => s !== id))
     reiniciarSiVacio(draftSintoma, nuevos)
   }
 
-  const analizar = (texto) => {
+  const analizar = (
+    texto,
+    elegidos = sintomasElegidos,
+    descartados = sintomasDescartados,
+  ) => {
     setCausaSeleccionada(null)
     setCausaPrevia(null)
     setVerTodasCausas(false)
-    analizarSintoma(texto.trim(), sintomasElegidos)
+    analizarSintoma(texto.trim(), elegidos, descartados)
+  }
+
+  const handleQuitarDetectado = (id) => {
+    const elegidos = sintomasElegidos.filter((s) => s !== id)
+    const descartados = [...sintomasDescartados, id]
+    setSintomasElegidos(elegidos)
+    setSintomasDescartados(descartados)
+
+    if (sintomasDetectados.every((s) => s === id)) {
+      setCausaSeleccionada(null)
+      limpiarDiagnosticos()
+      return
+    }
+    analizar(draftSintoma, elegidos, descartados)
   }
 
   const handleAnalizar = () => analizar(draftSintoma)
 
   const handleEjemplo = (ejemplo) => {
     setDraftSintoma(ejemplo)
-    analizar(ejemplo)
+    setSintomasDescartados([])
+    analizar(ejemplo, sintomasElegidos, [])
   }
 
   const handleSeleccionarCausa = (causa) => {
@@ -310,8 +332,19 @@ export default function DiagnosticoPC() {
                         aria-labelledby="sintomas-detectados"
                         className={styles.chipList}>
                         {sintomasDetectados.map((s) => (
-                          <li key={s} className={styles.chip}>
-                            {etiquetaSintoma(s)}
+                          <li key={s}>
+                            <button
+                              type="button"
+                              className={styles.chip}
+                              aria-label={`Quitar ${etiquetaSintoma(s)}`}
+                              onClick={() => handleQuitarDetectado(s)}>
+                              {etiquetaSintoma(s)}
+                              <span
+                                className={styles.chipQuitar}
+                                aria-hidden="true">
+                                ×
+                              </span>
+                            </button>
                           </li>
                         ))}
                       </ul>
