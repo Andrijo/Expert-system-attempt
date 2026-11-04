@@ -186,12 +186,32 @@
 }
 
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: var(--color-secondary);
+  border: none;
   border-radius: var(--radius-card);
-  padding: 3px 14px;
+  padding: 3px 10px 3px 14px;
   color: var(--color-on-accent);
   font-size: 0.8rem;
   font-family: var(--font-family);
+  cursor: pointer;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.chipQuitar {
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.chip:hover .chipQuitar {
+  opacity: 1;
 }
 
 .skeleton {

@@ -95,7 +95,7 @@ export function useDiagnosticoPC() {
   }, [])
 
   const analizarSintoma = useCallback(
-    async (texto, sintomasElegidos = []) => {
+    async (texto, sintomasElegidos = [], sintomasDescartados = []) => {
       if (
         typeof texto !== "string" ||
         (!texto.trim() && sintomasElegidos.length === 0)
@@ -113,7 +113,9 @@ export function useDiagnosticoPC() {
       const id = ++busquedaActual.current
       const sintomas = [
         ...new Set([...extraerSintomas(texto), ...sintomasElegidos]),
-      ].filter((s) => SINTOMAS_VALIDOS.has(s))
+      ].filter(
+        (s) => SINTOMAS_VALIDOS.has(s) && !sintomasDescartados.includes(s),
+      )
 
       setLenguajeProhibido(false)
       setHasSearched(true)
